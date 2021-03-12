@@ -30,13 +30,19 @@ autoreconf -f -i
 chmod +x configure
 ```
 
-5. Build XFig
+5. Run the configure script
+
+```
+./configure
+```
+
+6. Build XFig
 
 ```
 make -j
 ```
 
-6. **(Optional)** Clean build
+7. **(Optional)** Clean build
 
 ```
 make clean
