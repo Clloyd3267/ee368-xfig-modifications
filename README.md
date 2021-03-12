@@ -8,8 +8,8 @@ See XFig Installation notes for installation guide: http://mcj.sourceforge.net/i
 
 ### Branches
 
-| Branch Name           | Description                                                                              |
-|-----------------------|------------------------------------------------------------------------------------------|
+| Branch Name                 | Description                                                                              |
+|-----------------------------|------------------------------------------------------------------------------------------|
 | **master**                | The main release branch.                                                                 |
 | **integration**           | A staging branch to integrate changes together for release to master.                    |
 | **export-2-vdx-dev**      | A branch for development of the Export to Visio feature.                                 |
