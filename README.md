@@ -4,7 +4,44 @@ A few additional features for the interactive drawing tool XFig.
 
 ### Installation
 
-See XFig Installation notes for installation guide: http://mcj.sourceforge.net/installation.html
+See XFig Installation notes for general installation guide: http://mcj.sourceforge.net/installation.html
+
+1. Clone this repo
+
+```
+git clone https://github.com/Clloyd3267/ee368-xfig-modifications.git
+```
+
+2. Change directory to XFig source directory
+
+```
+cd ee368-xfig-modifications/xfig-3.2.6a
+```
+
+3. [Reconfigure](https://stackoverflow.com/questions/33278928/how-to-overcome-aclocal-1-15-is-missing-on-your-system-warning) AC Local Configuration 
+
+```
+autoreconf -f -i
+```
+
+4. Allow execution to configure script
+
+```
+chmod +x configure
+```
+
+5. Build XFig
+
+```
+make -j
+```
+
+6. **(Optional)** Clean build
+
+```
+make clean
+```
+
 
 ### Branches
 
