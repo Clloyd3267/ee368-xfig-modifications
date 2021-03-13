@@ -112,4 +112,10 @@ As for commit messages, make them as detailed as possible. Like variable naming,
 
 Lastly, as for when to push, I only want code pushed on GitHub if it is working in some fashion. That is to say it compiles and "runs". It may not be a full feature, but if it kind of works, it's okay in my eyes. I would rather tons of commits on your end, then we rebase/clean them up (talk to me later) then push them so that GitHub does not get that cluttered. However once again, for all practical purposes, feature champions "own" your feature branch so you get to choose this style.
 
+```bash
+git push
+git pull
+```
+
+
 Git is a complicated thing and has lots of confusing commands. it's pretty Googlable, but you can still screw yourselves up pretty bad. If something is not working, or Git is giving error messages, or you want to do something but don't know how, DM me. The worst thing you can do is do a ```git push``` in these cases. That's how we lose information. If you contact me we can work it out and keep things organized and running smoothly.
