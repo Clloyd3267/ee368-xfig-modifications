@@ -227,6 +227,7 @@ void undo_addpoint(void)
 void undo_deletepoint(void)
 {
     // last_action = F_NULL;	/* to avoid doing a clean-up during adding */ // KAB not sure if I need to modify this
+		pop_undo_stack_action(); // KAB added to pop last action
 
     if (last_object == O_POLYLINE) {
 	linepoint_adding(saved_objects.lines, last_prev_point,
@@ -249,7 +250,8 @@ void undo_break(void)
     /* remove the depths from this compound because they'll be added in right after */
     remove_compound_depth(saved_objects.compounds);
     list_add_compound(&objects.compounds, saved_objects.compounds);
-    last_action = F_GLUE;
+    // last_action = F_GLUE;  // KAB
+		pop_undo_stack_action();
     toggle_markers_in_compound(saved_objects.compounds);
     mask_toggle_compoundmarker(saved_objects.compounds);
 }
@@ -261,7 +263,8 @@ void undo_glue(void)
     append_objects(&objects, saved_objects.compounds, &object_tails);
     /* add the depths from this compound because they weren't added by the append_objects() */
     add_compound_depth(saved_objects.compounds);
-    last_action = F_BREAK;
+    // last_action = F_BREAK; // KAB
+		pop_undo_stack_action();
     mask_toggle_compoundmarker(saved_objects.compounds);
     toggle_markers_in_compound(saved_objects.compounds);
     if (cur_mode != F_GLUE && cur_mode != F_BREAK)
@@ -301,7 +304,8 @@ void undo_add_arrowhead(void)
       default:
 	return;
     }
-    last_action = F_DELETE_ARROW_HEAD;
+    // last_action = F_DELETE_ARROW_HEAD; // KAB
+		pop_undo_stack_action();
 }
 
 void undo_delete_arrowhead(void)
@@ -331,7 +335,8 @@ void undo_delete_arrowhead(void)
       default:
 	return;
     }
-    last_action = F_ADD_ARROW_HEAD;
+    // last_action = F_ADD_ARROW_HEAD; // KAB
+		pop_undo_stack_action();
 }
 
 /*
@@ -349,7 +354,8 @@ void undo_change(void)
     F_arc	    swp_a;
     F_text	    swp_t;
 
-    last_action = F_NULL;	/* to avoid a clean-up during "unchange" */
+    // last_action = F_NULL;	/* to avoid a clean-up during "unchange" */ // KAB
+		pop_undo_stack_action();
     switch (last_object) {
       case O_POLYLINE:
 	new_l = saved_objects.lines;		/* the original */
@@ -583,7 +589,8 @@ void undo_delete(void)
 	append_objects(&objects, &saved_objects, &object_tails);
 	redisplay_zoomed_region(xmin, ymin, xmax, ymax);
     }
-    last_action = F_ADD;
+    // last_action = F_ADD; //KAB
+		pop_undo_stack_action();
 }
 
 void undo_move(void)
@@ -670,7 +677,8 @@ void undo_load(void)
     show_fillcolor();
     /* redisply that figure */
     redisplay_canvas();
-    last_action = F_LOAD;
+    // last_action = F_LOAD; //KAB
+		pop_undo_stack_action();
 }
 
 void undo_scale(void)
@@ -748,7 +756,7 @@ void swap_newp_lastp(void)
 
 void clean_up(void)
 {
-    if (last_action == F_EDIT) {
+    if (last_action[0] == F_EDIT) {
 	switch (last_object) {
 	  case O_ARC:
 	    saved_objects.arcs->next = NULL;
@@ -778,7 +786,7 @@ void clean_up(void)
 	    free((char *) saved_objects.comments);
 	    break;
 	}
-    } else if (last_action==F_DELETE || last_action==F_JOIN || last_action==F_SPLIT) {
+} else if ([0]]==F_DELETE || last_action[0]==F_JOIN || last_action[0]==F_SPLIT) {
 	switch (last_object) {
 	  case O_ARC:
 	    free_arc(&saved_objects.arcs);
@@ -807,8 +815,8 @@ void clean_up(void)
 	    free_text(&saved_objects.texts);
 	    break;
 	}
-    } else if (last_action == F_DELETE_POINT || last_action == F_ADD_POINT) {
-	if (last_action == F_DELETE_POINT) {
+} else if (last_action[0] == F_DELETE_POINT || last_action[0] == F_ADD_POINT) {
+	if (last_action[0] == F_DELETE_POINT) {
 /**************************************************
 	    free((char *) last_selected_point);
 	    free((char *) last_selected_sfactor);
@@ -823,19 +831,19 @@ void clean_up(void)
 	saved_objects.lines = NULL;
 	saved_objects.splines = NULL;
 	saved_objects.texts = NULL;
-    } else if (last_action == F_LOAD) {
+} else if (last_action[0] == F_LOAD) {
 	free_arc(&saved_objects.arcs);
 	free_compound(&saved_objects.compounds);
 	free_ellipse(&saved_objects.ellipses);
 	free_line(&saved_objects.lines);
 	free_spline(&saved_objects.splines);
 	free_text(&saved_objects.texts);
-    } else if (last_action == F_GLUE) {
+} else if (last_action[0] == F_GLUE) {
 	saved_objects.compounds = NULL;
-    } else if (last_action == F_BREAK) {
+} else if (last_action[0] == F_BREAK) {
 	free((char *) saved_objects.compounds);
 	saved_objects.compounds = NULL;
-    } else if (last_action == F_ADD || last_action == F_MOVE) {
+} else if (last_action[0] == F_ADD || last_action[0] == F_MOVE) {
 	saved_objects.arcs = NULL;
 	saved_objects.compounds = NULL;
 	saved_objects.ellipses = NULL;
@@ -843,25 +851,26 @@ void clean_up(void)
 	saved_objects.splines = NULL;
 	saved_objects.texts = NULL;
 	free_linkinfo(&last_links);
-    } else if (last_action == F_CONVERT) {
+} else if (last_action[0] == F_CONVERT) {
 	if (last_object == O_POLYLINE)
 	    saved_objects.splines = NULL;
 	else
 	    saved_objects.lines = NULL;
-    } else if (last_action == F_OPEN_CLOSE) {
+    } else if (last_action[0] == F_OPEN_CLOSE) {
         saved_objects.splines = NULL;
         saved_objects.lines = NULL;
 	free((char *) last_for_arrow);
 	free((char *) last_back_arrow);
-    } else if (last_action == F_ADD_ARROW_HEAD ||
-	       last_action == F_DELETE_ARROW_HEAD) {
+} else if (last_action[0] == F_ADD_ARROW_HEAD ||
+	       last_action[0] == F_DELETE_ARROW_HEAD) {
 	saved_objects.splines = NULL;
 	saved_objects.lines = NULL;
 	saved_objects.arcs = NULL;
 	last_prev_point = NULL;
 	last_selected_point = NULL;
     }
-    last_action = F_NULL;
+    // last_action = F_NULL; //KAB
+		pop_undo_stack_action();
 }
 
 void set_latestarc(F_arc *arc)
@@ -936,14 +945,16 @@ void set_newposition(int x, int y)
     new_position.y = y;
 }
 
-void set_action(int action)
+void set_action(int action) // KAB replaced by push and pop functions
 {
-    last_action = action;
+    // last_action = action;
+		push_undo_stack_action(action);  // add recent action to stack
 }
 
 void set_action_object(int action, int object)
 {
-    last_action = action;
+    // last_action = action;
+		push_undo_stack_action(action);
     last_object = object;
 }
 
