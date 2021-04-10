@@ -73,13 +73,19 @@ F_arrow		*saved_back_arrow = (F_arrow *) NULL;
 F_line		*latest_line;		/* for undo_join (line) */
 F_spline	*latest_spline;		/* for undo_join (spline) */
 
-int		last_action = F_NULL;
+// int		last_action = F_NULL
+
+// KAB pointer for last undone action of depth 5
+// KAB top of stack is index 0 and bottom of stack is index 4
+int * last_action = {F_NULL, F_NULL, F_NULL, F_NULL, F_NULL};
+// KAB redo action stack
+int * redo_action_stack = {F_NULL, F_NULL, F_NULL, F_NULL, F_NULL};
 
 /*************** LOCAL *****************/
 
-static int	last_object;
-static F_pos	last_position, new_position;
-static int	last_arcpointnum;
+static int	last_object;  // KAB may need to change this to an int * for multiple objects
+static F_pos	last_position, new_position;  // KAB may need to change this to an F_pos * for multiple positions
+static int	last_arcpointnum
 static F_point *last_prev_point, *last_selected_point, *last_next_point;
 static F_sfactor  *last_selected_sfactor;
 static F_linkinfo *last_links;
@@ -112,7 +118,8 @@ undo(void)
     /* turn off Compose key LED */
     setCompLED(0);
 
-    switch (last_action) {
+    // switch (last_action) {
+    switch (last_action[0]) {  // check action contained at the top of the stack
       case F_ADD:
 	undo_add();
 	break;
@@ -219,7 +226,7 @@ void undo_addpoint(void)
 
 void undo_deletepoint(void)
 {
-    last_action = F_NULL;	/* to avoid doing a clean-up during adding */
+    // last_action = F_NULL;	/* to avoid doing a clean-up during adding */ // KAB not sure if I need to modify this
 
     if (last_object == O_POLYLINE) {
 	linepoint_adding(saved_objects.lines, last_prev_point,
@@ -955,3 +962,17 @@ void set_last_arrows(F_arrow *forward, F_arrow *backward)
       last_for_arrow = forward;
       last_back_arrow = backward;
 }
+
+////////////////////// Functions Added by Kyle Bielby //////////////////////////
+// pop the last action from the stack
+void pop_undo_stack_action() {
+	for(int i = 0; i < 5; i ++) {
+    if(i != 4){
+			last_action[i] = last_action[i + 1];  // move stack actions up by index 1
+		}
+		else if(i == 4) {
+			last_action[4] = F_NULL; // set last element in action stack to null
+		}
+	}
+}
+////////////////// End Functions Added by Kyle Bielby //////////////////////////
