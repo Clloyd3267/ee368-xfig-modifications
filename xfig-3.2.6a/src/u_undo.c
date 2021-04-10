@@ -526,7 +526,9 @@ void undo_add(void)
 	redisplay_zoomed_region(xmin, ymin, xmax, ymax);
 	break;
     }
-    last_action = F_DELETE;
+
+    // last_action = F_DELETE;
+		pop_undo_stack_action();
 }
 
 void undo_delete(void)
@@ -964,7 +966,7 @@ void set_last_arrows(F_arrow *forward, F_arrow *backward)
 }
 
 ////////////////////// Functions Added by Kyle Bielby //////////////////////////
-// pop the last action from the stack
+// pop the last action from the undo action stack
 void pop_undo_stack_action() {
 	for(int i = 0; i < 5; i ++) {
     if(i != 4){
@@ -975,4 +977,41 @@ void pop_undo_stack_action() {
 		}
 	}
 }
+
+// push the given action onto the undo action stack
+void push_undo_stack_action(int action) {
+	for(int index = 0, index < 5; i++) {
+		if (index != 4) {
+			last_action[index + 1] = last_action[index]
+			if (index == 0) {
+				last_action[0] = action;
+			}
+		}
+  }
+}
+
+// pop the last action from the redo action stack
+void pop_redo_stack_action() {
+	for(int i = 0; i < 5; i ++) {
+    if(i != 4){
+			redo_action_stack[i] = redo_action_stack[i + 1];  // move stack actions up by index 1
+		}
+		else if(i == 4) {
+			redo_action_stack[4] = F_NULL; // set last element in action stack to null
+		}
+	}
+}
+
+// push the given action onto the undo action stack
+void push_redo_stack_action(int action) {
+	for(int index = 0, index < 5; i++) {
+		if (index != 4) {
+			redo_action_stack[index + 1] = redo_action_stack[index]
+			if (index == 0) {
+				redo_action_stack[0] = action;
+			}
+		}
+  }
+}
+
 ////////////////// End Functions Added by Kyle Bielby //////////////////////////

@@ -48,4 +48,7 @@ extern void set_latestspline (F_spline *spline);
 extern void set_latesttext (F_text *text);
 extern void set_newposition (int x, int y);
 
+////////////////////// Functions added by Kyle Bielby //////////////////////////
+//////////////////// End Functions added by Kyle Bielby ////////////////////////
+
 #endif /* U_UNDO_H */
