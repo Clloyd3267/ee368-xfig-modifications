@@ -67,7 +67,7 @@ driver), gif, ibmgl, jpeg, latex, map (HTML image map), mf (MetaFont),
 mp (MetaPost), mmp (Multi-MetaPost), pcx, pdf, pdftex, pdftex_t, pic,
 pict2e, pictex, png, ppm, ps, pstex, pstex_t, pstricks, ptk (Perl/tk),
 shape (LaTeX shaped paragraphs), sld (AutoCad slide format), svg (beta
-driver), textyl, tiff, tikz, tk (tcl/tk), tpic, xbm and xpm\fR.
+driver), vdx, textyl, tiff, tikz, tk (tcl/tk), tpic, xbm and xpm\fR.
 
 Notes:
 .br

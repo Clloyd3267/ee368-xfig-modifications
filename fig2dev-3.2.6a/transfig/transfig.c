@@ -76,6 +76,7 @@ char *lname[] = {
 		"ptk",
 		"sld",
 		"svg",
+		"vdx",
 		"textyl",
 		"tiff",
 		"tikz",

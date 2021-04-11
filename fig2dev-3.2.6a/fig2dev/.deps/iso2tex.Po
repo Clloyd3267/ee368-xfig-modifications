@@ -1,0 +1,3 @@
+iso2tex.o: iso2tex.c /usr/include/stdc-predef.h
+
+/usr/include/stdc-predef.h:

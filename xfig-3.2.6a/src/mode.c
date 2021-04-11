@@ -129,6 +129,7 @@ char	       *lang_items[] = {
 	"tk",
 	"shape",
 	"svg",
+	"vdx",
 /* bitmap formats start here */
 	"gif", "jpeg", "pcx", "png", "ppm", "sld", "tiff", "xbm",
 #ifdef USE_XPM
@@ -170,6 +171,7 @@ char	       *lang_texts[] = {
 	"Tk  (Tcl/Tk toolkit)                ",
 	"SHAPE (ShapePar definition )        ",
 	"SVG (Scalable Vector Graphics; beta)",
+	"VDX (Visio XML File Format)         ",
 
 	/*** bitmap formats follow ***/
 	/* if you move GIF, change FIRST_BITMAP_LANG in mode.h */
