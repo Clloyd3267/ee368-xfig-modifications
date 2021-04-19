@@ -165,7 +165,7 @@ conftest.c:18:6: warning: conflicting types for built-in function 'cos'; expecte
       |      ^~~
 conftest.c:1:1: note: 'cos' is declared in header '<math.h>'
     1 | /* confdefs.h */
-/usr/bin/ld: /tmp/ccrzMl20.o: in function `main':
+/usr/bin/ld: /tmp/ccCLA2MJ.o: in function `main':
 /home/butlerzc/ee368-xfig-modifications/fig2dev-3.2.6a/conftest.c:22: undefined reference to `cos'
 collect2: error: ld returned 1 exit status
 configure:4641: $? = 1
@@ -323,7 +323,7 @@ configure:5203: $? = 0
 configure:5203: result: yes
 configure:5386: checking for library containing png_read_info
 configure:5417: gcc -o conftest -g -O2   conftest.c -lm  >&5
-/usr/bin/ld: /tmp/ccVqQiCi.o: in function `main':
+/usr/bin/ld: /tmp/ccVu6UI0.o: in function `main':
 /home/butlerzc/ee368-xfig-modifications/fig2dev-3.2.6a/conftest.c:39: undefined reference to `png_read_info'
 collect2: error: ld returned 1 exit status
 configure:5417: $? = 1
@@ -389,7 +389,7 @@ configure:5724: $? = 0
 configure:5774: result: libraries , headers 
 configure:5797: checking for library containing XpmReadFileToXpmImage
 configure:5828: gcc -o conftest -g -O2    conftest.c -lpng -lm  >&5
-/usr/bin/ld: /tmp/ccD2JBI7.o: in function `main':
+/usr/bin/ld: /tmp/ccgNE3LP.o: in function `main':
 /home/butlerzc/ee368-xfig-modifications/fig2dev-3.2.6a/conftest.c:40: undefined reference to `XpmReadFileToXpmImage'
 collect2: error: ld returned 1 exit status
 configure:5828: $? = 1
@@ -757,7 +757,7 @@ configure:6605: $? = 0
 configure:6605: result: yes
 configure:6605: checking for _setmode
 configure:6605: gcc -o conftest -g -O2   conftest.c -lXpm -lpng -lm  >&5
-/usr/bin/ld: /tmp/ccmjZiCz.o: in function `main':
+/usr/bin/ld: /tmp/ccjHqfNg.o: in function `main':
 /home/butlerzc/ee368-xfig-modifications/fig2dev-3.2.6a/conftest.c:73: undefined reference to `_setmode'
 collect2: error: ld returned 1 exit status
 configure:6605: $? = 1

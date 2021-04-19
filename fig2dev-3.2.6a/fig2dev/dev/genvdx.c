@@ -87,19 +87,19 @@ static int	clipno = -1;	/* number of current clip path */
 static void
 put_capstyle(int c)
 {
-	if (c == 1)
-	    fputs(" stroke-linecap=\"round\"", tfp);
-	else if (c == 2)
-	    fputs(" stroke-linecap=\"square\"", tfp);
+	// if (c == 1)
+	    // fputs(" stroke-linecap=\"round\"", tfp);
+	// else if (c == 2)
+	    // fputs(" stroke-linecap=\"square\"", tfp);
 }
 
 static void
 put_joinstyle(int j)
 {
-	if (j == 1)
-	    fputs(" stroke-linejoin=\"round\"", tfp);
-	else if (j == 2)
-	    fputs(" stroke-linejoin=\"bevel\"", tfp);
+	// if (j == 1)
+	    // fputs(" stroke-linejoin=\"round\"", tfp);
+	// else if (j == 2)
+	    // fputs(" stroke-linejoin=\"bevel\"", tfp);
 }
 
 static unsigned int
@@ -584,16 +584,28 @@ genvdx_spline( /* not used by fig2dev */
 	F_spline *s)
 {
     F_point *p;
-    fprintf(tfp, "<!-- Spline -->\n");
-    print_comments("<!-- ", s->comments, " -->");
+	
+	// Shape
+	fputs("\t\t\t<Shape ID='1' Name='Spline' Type='Shape'>\n", tfp);
+	// XForm
+	fputs("\t\t\t\t<XForm>\n", tfp);
+	fprintf(tfp, "\t\t\t\t\t<PinX>%d</PinX>\n", s->points->x); // x coord
+	fprintf(tfp, "\t\t\t\t\t<PinY>%d</PinY>\n", s->points->y); // y coord
+	fputs("\t\t\t\t<XForm>\n", tfp);
+	// Line
+	fputs("\t\t\t\t<Line>\n", tfp);
+	fprintf(tfp, "\t\t\t\t\t<LineColor>#%6.6x</LineColor>\n", rgbColorVal(s->pen_color));
+	fprintf(tfp, "\t\t\t\t\t<LineWeight>%dpx</LineWeight>\n", (int) ceil(linewidth_adj(s->thickness)));
+	fputs("\t\t\t\t</Line>\n", tfp);
+	fputs("\t\t\t</Shape>\n", tfp);
 
-    fprintf(tfp, "<path style=\"stroke:#%6.6x;stroke-width:%d\" d=\"",
-	     rgbColorVal(s->pen_color), (int) ceil (linewidth_adj(s->thickness)));
-    fprintf(tfp, "M %d,%d\n C", s->points->x , s->points->y );
-    for (p = s->points++; p; p = p->next) {
-	fprintf(tfp, "%d,%d\n", p->x , p->y );
-    }
-    fprintf(tfp, "\"/>\n");
+    // fprintf(tfp, "<path style=\"stroke:#%6.6x;stroke-width:%d\" d=\"",
+	     // rgbColorVal(s->pen_color), (int) ceil (linewidth_adj(s->thickness)));
+    // fprintf(tfp, "M %d,%d\n C", s->points->x , s->points->y );
+    // for (p = s->points++; p; p = p->next) {
+	// fprintf(tfp, "%d,%d\n", p->x , p->y );
+    // }
+    // fprintf(tfp, "\"/>\n");
 }
 
 // For Arcs
@@ -609,8 +621,8 @@ genvdx_arc(F_arc *a)
 	    !a->for_arrow && !a->back_arrow)
 	return;
 
-    fputs("<!-- Arc -->\n", tfp);
-    print_comments("<!-- ", a->comments, " -->");
+	// Shape
+	fputs("\t\t\t<Shape ID='1' Name='Arc' Type='Shape'>\n", tfp);
 
     if (a->for_arrow || a->back_arrow) {
 	if (a->for_arrow) {
@@ -661,36 +673,50 @@ genvdx_arc(F_arc *a)
 	INIT_PAINT(a->fill_style);
     }
 
+	// XForm
+	fputs("\t\t\t\t<XForm>\n", tfp);
+	fprintf(tfp, "\t\t\t\t\t<PinX>%d</PinX>\n", a->point[0].x); // x coord
+	fprintf(tfp, "\t\t\t\t\t<PinY>%d</PinY>\n", a->point[0].y); // y coord
+	fprintf(tfp, "\t\t\t\t\t<Radius>%ld</Radius>\n", lround(radius));
+	fputs("\t\t\t\t<XForm>\n", tfp);
+
+
     /* paint the object */
-    fputs("<path d=\"M", tfp);
+    // fputs("<path d=\"M", tfp);
     if (a->type == T_PIE_WEDGE_ARC)
 		fprintf(tfp, " %ld,%ld L",
 			lround(a->center.x), lround(a->center.y));
-    fprintf(tfp, " %d,%d A %ld %ld %d %d %d %d %d",
-	     a->point[0].x , a->point[0].y ,
-	     lround(radius), lround(radius), 0,
-	     (fabs(angle) > 180.) ? 1 : 0,
-	     (fabs(angle) > 0. && a->direction == 0) ? 1 : 0,
-	     a->point[2].x , a->point[2].y );
+    // fprintf(tfp, " %d,%d A %ld %ld %d %d %d %d %d",
+	     // a->point[0].x , a->point[0].y ,
+	     // lround(radius), lround(radius), 0,
+	     // (fabs(angle) > 180.) ? 1 : 0,
+	     // (fabs(angle) > 0. && a->direction == 0) ? 1 : 0,
+	     // a->point[2].x , a->point[2].y );
     if (a->type == T_PIE_WEDGE_ARC)
 	fputs(" z", tfp);
-    fputc('\"', tfp);
+    // fputc('\"', tfp);
 
     if (has_clip)
 	continue_paint_w_clip_vdx(a->fill_style, a->pen_color, a->fill_color);
     else
 	continue_paint_vdx(a->fill_style, a->pen_color, a->fill_color);
 
+	// Line
+	fputs("\t\t\t\t<Line>\n", tfp);
+
     if (a->thickness) {
-	fprintf(tfp, "\n\tstroke=\"#%6.6x\" stroke-width=\"%dpx\"",
-		rgbColorVal(a->pen_color),
-		(int) ceil(linewidth_adj(a->thickness)));
+	fprintf(tfp, "\t\t\t\t\t<LineColor>#%6.6x</LineColor>\n", rgbColorVal(a->pen_color));
+	fprintf(tfp, "\t\t\t\t\t<LineWeight>%dpx</LineWeight>\n", (int) ceil(linewidth_adj(a->thickness)));
+	// fprintf(tfp, "\n\tstroke=\"#%6.6x\" stroke-width=\"%dpx\"",
+		// rgbColorVal(a->pen_color),
+		// (int) ceil(linewidth_adj(a->thickness)));
 	put_capstyle(a->cap_style);
 	if (a->style > SOLID_LINE)
 	    vdx_dash(a->style, a->style_val);
     }
-
-    fputs("/>\n", tfp);
+	fputs("\t\t\t\t</Line>\n", tfp);
+	fputs("\t\t\t</Shape>\n", tfp);
+    // fputs("/>\n", tfp);
     if (a->for_arrow || a->back_arrow)
 	(void) vdx_arrows(a->thickness, a->for_arrow, a->back_arrow,
 			&forw1, &forw2, &back1, &back2, a->pen_color);
