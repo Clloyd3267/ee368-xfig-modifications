@@ -21,8 +21,7 @@ static void generate_tile(int number, int colorIndex);
 static void vdx_dash(int, double);
 
 #define PREAMBLE "<?xml version=\"1.0\" encoding=\"utf-8\" standalone=\"no\"?>"
-// Not sure what SVG_LINEWIDTH refers to
-#define	SVG_LINEWIDTH	76
+
 
 // Not sure what this is
 static unsigned int symbolchar[256]=
@@ -284,33 +283,29 @@ genvdx_end(void)
 #define	CLIP	-8
 
 #define	INIT_PAINT(fill_style) \
-		if (fill_style > NUMFILLS) fputs("<defs>\n", tfp)
+		if (fill_style > NUMFILLS)
 
 #define	INIT_PAINT_W_CLIP(fill_style, thickness, for_arrow, back_arrow,	\
 			  forw1, forw2, back1, back2)			\
-	fputs("<defs>\n", tfp);					\
+					\
 	(void) vdx_arrows(thickness, for_arrow, back_arrow,	\
 		forw1, forw2, back1, back2, CLIP);		\
 	if (fill_style == UNFILLED)				\
-		fputs("</defs>\n", tfp)
+		
 
 // Used for fill
 void
 continue_paint_vdx(int fill_style, int pen_color, int fill_color)
 {
     if (fill_style > NUMFILLS) {
-	fprintf(tfp, " id=\"p%d\"/>\n", ++pathno);
-	generate_tile(fill_style - NUMFILLS, pen_color);
-	fputs("</defs>\n", tfp);
-	fprintf(tfp, "<use xlink:href=\"#p%d\" fill=\"#%6.6x\"/>\n",
-		pathno, rgbColorVal(fill_color));
-	fprintf(tfp, "<use xlink:href=\"#p%d\" fill=\"url(#tile%d)\"",
-		pathno, tileno);
+		generate_tile(fill_style - NUMFILLS, pen_color);
+		fprintf(tfp, "\t\t\t\t\t\t<FillColor>#%6.6x</FillColor>\n", rgbColorVal(fill_color));
+		fputs("\t\t\t\t\t</Pattern>\n", tfp);
     } else if (fill_style > UNFILLED) {	/* && fill_style <= NUMFILLS */
-	// Fill
-	fputs("\t\t\t\t<Fill>\n", tfp);
-	fprintf(tfp, "\t\t\t\t\t<FillColor>#%6.6x</FillColor>\n", rgbFillVal(fill_color, fill_style));
-	fputs("\t\t\t\t</Fill>\n", tfp);
+		// Fill
+		fputs("\t\t\t\t<Fill>\n", tfp);
+		fprintf(tfp, "\t\t\t\t\t<FillColor>#%6.6x</FillColor>\n", rgbFillVal(fill_color, fill_style));
+		fputs("\t\t\t\t</Fill>\n", tfp);
     }
 }
 
@@ -319,29 +314,24 @@ void
 continue_paint_w_clip_vdx(int fill_style, int pen_color, int fill_color)
 {
     if (fill_style > UNFILLED) {
-	fprintf(tfp, " id=\"p%d\"/>\n", ++pathno);
+	// fprintf(tfp, " id=\"p%d\"/>\n", ++pathno);
 	if (fill_style > NUMFILLS) {
 	    generate_tile(fill_style - NUMFILLS, pen_color);
 	}
-	fputs("</defs>\n", tfp);
 	fprintf(tfp, "<use xlink:href=\"#p%d\" ", pathno);
 	if (fill_style > NUMFILLS) {
 		fputs("\t\t\t\t<Fill>\n", tfp);
 		fprintf(tfp, "\t\t\t\t\t<FillColor>#%6.6x</FillColor>\n", rgbColorVal(fill_color));
 		fputs("\t\t\t\t</Fill>\n", tfp);
-	    // fprintf(tfp, "fill=\"#%6.6x\"/>\n", rgbColorVal(fill_color));
 	    fprintf(tfp, "<use xlink:href=\"#p%d\" fill=\"url(#tile%d)\"/> ",
 		    pathno, tileno);
 	} else {
 		fputs("\t\t\t\t<Fill>\n", tfp);
 		fprintf(tfp, "\t\t\t\t\t<FillColor>#%6.6x</FillColor>\n", rgbFillVal(fill_color, fill_style));
 		fputs("\t\t\t\t</Fill>\n", tfp);
-	    // fprintf(tfp, "fill=\"#%6.6x\"/>\n",
-			// rgbFillVal(fill_color, fill_style));
 	}
 	fprintf(tfp, "<use xlink:href=\"#p%d\"", pathno);
     }
-    fprintf(tfp, " clip-path=\"url(#cp%d)\"", clipno);
 }
 
 // For lines
@@ -392,25 +382,16 @@ genvdx_line(F_line *l)
 		fprintf(tfp, "\t\t\t\t\t<Width>%d</Width>\n", width); // width
 		fprintf(tfp, "\t\t\t\t\t<Height>%d</Height>\n", height); // height
 
-
 		if (l->pic->flipped) {
 			fprintf(tfp, "\t\t\t\t\t<Rotation>(%d %d %d)</Rotation>\n", rotation, px2, py2); // rotation
 			fprintf(tfp, "\t\t\t\t\t<Scale>(-1, 1)</Scale>\n"); // scale
 			fprintf(tfp, "\t\t\t\t\t<Translation>(%d, %d)</Translation>\n", -2*px2, 0); // translation
-
-			// fprintf(tfp,
-			// "transform=\"rotate(%d %d %d) scale(-1,1) translate(%d,%d)\"\n",
-			// rotation, px2, py2, -2*px2, 0);
 		} else if (rotation !=0) {
 			fprintf(tfp, "\t\t\t\t\t<Rotation>(%d %d %d)</Rotation>\n", rotation, px2, py2); // rotation
-
-			// fprintf(tfp,"transform=\"rotate(%d %d %d)\"\n",rotation,px2,py2);
 		}
 		fputs("\t\t\t\t</XForm>\n", tfp);
 		fputs("\t\t\t</Shape>\n", tfp);
-		
-		// fprintf(tfp,"x=\"%d\" y=\"%d\" width=\"%d\" height=\"%d\"/>\n",
-		// px, py, width, height);
+
 		return;
     }
 
@@ -429,17 +410,12 @@ genvdx_line(F_line *l)
 	fputs("ID='1' ", tfp); // We don't know what ID is yet
 
 	if (l->type == T_POLYGON) {
-	    // chars = fputs("<polygon points=\"", tfp);
 		chars = fputs("Name='Polygon' Type='Shape'>\n", tfp);
 		// XForm
 		fputs("\t\t\t\t<XForm>\n", tfp);
 		fputs("\t\t\t\t\t<PolyPoints>", tfp);
 	    for (p = l->points; p->next; p = p->next) {
-		chars += fprintf(tfp, "%d, %d", p->x , p->y);
-		// if (chars > SVG_LINEWIDTH) {
-		    // fputc('\n', tfp);
-		    // chars = 0;
-		// }
+			chars += fprintf(tfp, "%d, %d", p->x , p->y);
 	    }
 		fputs("</PolyPoints>\n", tfp);
 		fputs("\t\t\t\t</XForm>\n", tfp);
@@ -465,7 +441,6 @@ genvdx_line(F_line *l)
 			fputs("Name='Arc Box' Type='Shape'>\n", tfp);
 		}
 		
-		
 		// XForm
 		fputs("\t\t\t\t<XForm>\n", tfp);
 		fprintf(tfp, "\t\t\t\t\t<PinX>%d</PinX>\n", px); // x coord
@@ -477,26 +452,15 @@ genvdx_line(F_line *l)
 			// fprintf(tfp, " rx=\"%d\"", l->radius);
 		}
 		fputs("\t\t\t\t</XForm>\n", tfp);
-
-//	    fprintf(tfp, "<rect x=\"%d\" y=\"%d\" width=\"%d\" height=\"%d\"",
-//			px, py, width, height);
-	    // if (l->type == T_ARC_BOX)
-		// fprintf(tfp, " rx=\"%d\"", l->radius);
 	}
 
     continue_paint_vdx(l->fill_style, l->pen_color, l->fill_color);
-
-    /* http://jwatt.org/SVG Authoring Guidelines.html recommends to
-       use px unit for stroke width */
 	   
 	// Line
 	fputs("\t\t\t\t<Line>\n", tfp);
 	if (l->thickness) {
 		fprintf(tfp, "\t\t\t\t\t<LineColor>#%6.6x</LineColor>\n", rgbColorVal(l->pen_color));
 		fprintf(tfp, "\t\t\t\t\t<LineWeight>%dpx</LineWeight>\n", (int) ceil(linewidth_adj(l->thickness)));
-		//fprintf(tfp, "\n\tstroke=\"#%6.6x\" stroke-width=\"%dpx\"",
-		//	rgbColorVal(l->pen_color),
-		//		(int) ceil(linewidth_adj(l->thickness)));
 		put_joinstyle(l->join_style);
 		put_capstyle(l->cap_style);
 		if (l->style > SOLID_LINE)
@@ -539,13 +503,8 @@ genvdx_line(F_line *l)
 	fputs("\t\t\t\t<XForm>\n", tfp);
 	chars = fputs("\t\t\t\t\t<PolyLinePoints>", tfp);
 
-	// chars = fputs("<polyline points=\"", tfp);
 	for (p = l->points; p; p = p->next) {
 	    chars += fprintf(tfp, "%d, %d", p->x , p->y);
-	    // if (chars > SVG_LINEWIDTH) {
-		// fputc('\n', tfp);
-		// chars = 0;
-	    // }
 	}
 	fputs("</PolyLinePoints>\n", tfp);
 	fputs("\t\t\t\t</XForm>\n", tfp);
@@ -560,9 +519,6 @@ genvdx_line(F_line *l)
 	if (l->thickness) {
 		fprintf(tfp, "\t\t\t\t\t<LineColor>#%6.6x</LineColor>\n", rgbColorVal(l->pen_color));
 		fprintf(tfp, "\t\t\t\t\t<LineWeight>%dpx</LineWeight>\n", (int) ceil(linewidth_adj(l->thickness)));
-	    // fprintf(tfp, "\n\tstroke=\"#%6.6x\" stroke-width=\"%dpx\"",
-		    // rgbColorVal(l->pen_color),
-		    // (int) ceil(linewidth_adj(l->thickness)));
 	    put_joinstyle(l->join_style);
 	    put_capstyle(l->cap_style);
 	    if (l->style > SOLID_LINE)
@@ -570,7 +526,6 @@ genvdx_line(F_line *l)
 	}
 	fputs("\t\t\t\t</Line>\n", tfp);
 	fputs("\t\t\t</Shape>\n", tfp);
-	// fputs("/>\n", tfp);
 	if (l->for_arrow || l->back_arrow)
 	    (void) vdx_arrows(l->thickness, l->for_arrow, l->back_arrow,
 			&(l->last[1]), l->last, (F_pos *)l->points->next,
@@ -598,14 +553,6 @@ genvdx_spline( /* not used by fig2dev */
 	fprintf(tfp, "\t\t\t\t\t<LineWeight>%dpx</LineWeight>\n", (int) ceil(linewidth_adj(s->thickness)));
 	fputs("\t\t\t\t</Line>\n", tfp);
 	fputs("\t\t\t</Shape>\n", tfp);
-
-    // fprintf(tfp, "<path style=\"stroke:#%6.6x;stroke-width:%d\" d=\"",
-	     // rgbColorVal(s->pen_color), (int) ceil (linewidth_adj(s->thickness)));
-    // fprintf(tfp, "M %d,%d\n C", s->points->x , s->points->y );
-    // for (p = s->points++; p; p = p->next) {
-	// fprintf(tfp, "%d,%d\n", p->x , p->y );
-    // }
-    // fprintf(tfp, "\"/>\n");
 }
 
 // For Arcs
@@ -682,19 +629,12 @@ genvdx_arc(F_arc *a)
 
 
     /* paint the object */
-    // fputs("<path d=\"M", tfp);
+
     if (a->type == T_PIE_WEDGE_ARC)
 		fprintf(tfp, " %ld,%ld L",
 			lround(a->center.x), lround(a->center.y));
-    // fprintf(tfp, " %d,%d A %ld %ld %d %d %d %d %d",
-	     // a->point[0].x , a->point[0].y ,
-	     // lround(radius), lround(radius), 0,
-	     // (fabs(angle) > 180.) ? 1 : 0,
-	     // (fabs(angle) > 0. && a->direction == 0) ? 1 : 0,
-	     // a->point[2].x , a->point[2].y );
     if (a->type == T_PIE_WEDGE_ARC)
 	fputs(" z", tfp);
-    // fputc('\"', tfp);
 
     if (has_clip)
 	continue_paint_w_clip_vdx(a->fill_style, a->pen_color, a->fill_color);
@@ -707,16 +647,13 @@ genvdx_arc(F_arc *a)
     if (a->thickness) {
 	fprintf(tfp, "\t\t\t\t\t<LineColor>#%6.6x</LineColor>\n", rgbColorVal(a->pen_color));
 	fprintf(tfp, "\t\t\t\t\t<LineWeight>%dpx</LineWeight>\n", (int) ceil(linewidth_adj(a->thickness)));
-	// fprintf(tfp, "\n\tstroke=\"#%6.6x\" stroke-width=\"%dpx\"",
-		// rgbColorVal(a->pen_color),
-		// (int) ceil(linewidth_adj(a->thickness)));
 	put_capstyle(a->cap_style);
 	if (a->style > SOLID_LINE)
 	    vdx_dash(a->style, a->style_val);
     }
 	fputs("\t\t\t\t</Line>\n", tfp);
 	fputs("\t\t\t</Shape>\n", tfp);
-    // fputs("/>\n", tfp);
+
     if (a->for_arrow || a->back_arrow)
 	(void) vdx_arrows(a->thickness, a->for_arrow, a->back_arrow,
 			&forw1, &forw2, &back1, &back2, a->pen_color);
@@ -787,9 +724,6 @@ genvdx_ellipse(F_ellipse *e)
 	if (e->thickness) {
 		fprintf(tfp, "\t\t\t\t\t<LineColor>#%6.6x</LineColor>\n", rgbColorVal(e->pen_color));
 		fprintf(tfp, "\t\t\t\t\t<LineWeight>%dpx</LineWeight>\n", (int) ceil(linewidth_adj(e->thickness)));
-		// fprintf(tfp, "\n\tstroke=\"#%6.6x\" stroke-width=\"%dpx\"",
-			// rgbColorVal(e->pen_color),
-				// (int) ceil(linewidth_adj(e->thickness)));
 	if (e->style > SOLID_LINE)
 		vdx_dash(e->style, e->style_val);
 	}
@@ -814,22 +748,6 @@ genvdx_text(F_text *t)
 	// Shape
 	fputs("\t\t\t<Shape ID='1' Name='Text' Type='Shape'>\n", tfp);
 	fputs("\t\t\t\t<Text>", tfp);
-    //fprintf(tfp, "<!-- Text -->\n");
-    //print_comments("<!-- ", t->comments, " -->");
-
-    // if (t->angle != 0.) {
-	// fprintf(tfp, "<g transform=\"translate(%d,%d) rotate(%.0f)\" >\n",
-		 // x, y, degrees(t->angle));
-	// x = y = 0;
-    // }
-    // fputs("<text xml:space=\"preserve\" ", tfp);
-    // fprintf(tfp, "x=\"%d\" y=\"%d\" fill=\"#%6.6x\" font-family=\"%s\" ",
-		// x, y, rgbColorVal(t->color), family[t->font / 4]);
-    // fprintf(tfp,
-	// "font-style=\"%s\" font-weight=\"%s\" font-size=\"%d\" text-anchor=\"%s\">",
-	 // ((t->font % 2 == 0 || t->font > 31) ? "normal" : "italic"),
-	 // ((t->font % 4 < 2 || t->font > 31) ? "normal" : "bold"),
-	 // (int)ceil(t->size * 12), anchor[t->type]);
 
     if (t->font == 32) {
 	for (cp = (unsigned char *) t->cstring; *cp; cp++) {
@@ -909,15 +827,9 @@ genvdx_text(F_text *t)
     if (dy != 0) fprintf(tfp,"</tspan>");
 #endif
 	
-    // fprintf(tfp, "</text>\n");
 	fputs("</Text>\n", tfp);
 	
 	// XForm
-	// if (t->angle != 0.) {
-	// fprintf(tfp, "<g transform=\"translate(%d,%d) rotate(%.0f)\" >\n",
-		 // x, y, degrees(t->angle));
-	// x = y = 0;
-    // }
 	fputs("\t\t\t\t<XForm>\n", tfp);
 	fprintf(tfp, "\t\t\t\t\t<PinX>%d</PinX>\n", x); // center x coord
 	fprintf(tfp, "\t\t\t\t\t<PinY>%d</PinY>\n", y); // center y coord
@@ -934,21 +846,9 @@ genvdx_text(F_text *t)
 	fprintf(tfp, "\t\t\t\t\t<Font>%s</Font>\n\t\t\t\t\t<FontSize>%d</FontSize>\n",
 		family[t->font / 4],
 		(int)ceil(t->size * 12));
-
-	
-    // fputs("<text xml:space=\"preserve\" ", tfp);
-    // fprintf(tfp, "x=\"%d\" y=\"%d\" fill=\"#%6.6x\" font-family=\"%s\" ",
-		// x, y, rgbColorVal(t->color), family[t->font / 4]);
-    // fprintf(tfp,
-	// "font-style=\"%s\" font-weight=\"%s\" font-size=\"%d\" text-anchor=\"%s\">",
-	 // ((t->font % 2 == 0 || t->font > 31) ? "normal" : "italic"),
-	 // ((t->font % 4 < 2 || t->font > 31) ? "normal" : "bold"),
-	 // (int)ceil(t->size * 12), anchor[t->type]);
+		
 	fputs("\t\t\t\t</Font>\n", tfp);
 	fputs("\t\t\t</Shape>\n", tfp);
-
-    // if (t->angle != 0)
-	// fprintf(tfp, "</g>");
 }
 
 static void
@@ -961,48 +861,24 @@ arrow_path(F_arrow *arrow, F_pos *arrow2, int pen_color, int npoints,
 {
     int	    i, chars;
 
-    fprintf(tfp, " to point %d,%d -->\n", arrow2->x, arrow2->y);
-    chars = fprintf(tfp, "<%s points=\"",
+
+    fprintf(tfp, "%d, %d", arrow2->x, arrow2->y);
+    chars = fprintf(tfp, "</Arrow>\n\t\t\t\t<%sPoints>",
 	    (points[0].x == points[npoints-1].x &&
-	     points[0].y == points[npoints-1].y ? "polygon" : "polyline"));
+	     points[0].y == points[npoints-1].y ? "Polygon" : "Polyline"));
     for (i = 0; i < npoints; ++i) {
 	chars += fprintf(tfp, " %d,%d", points[i].x ,
 		points[i].y );
-	if (chars > SVG_LINEWIDTH) {
-	    fputc('\n', tfp);
-	    chars = 0;
-	}
+
     }
-    fprintf(tfp,
-	"\"\n\tstroke=\"#%6.6x\" stroke-width=\"%dpx\" stroke-miterlimit=\"8\"",
-	rgbColorVal(pen_color),
-	(int) ceil(linewidth_adj((int)arrow->thickness)));
-    if (arrow->type < 13 && (arrow->style != 0 || nfillpoints != 0)) {
-	if (nfillpoints == 0)
-	    fprintf(tfp, " fill=\"#%6.6x\"/>\n", rgbColorVal(pen_color));
-	else { /* fill the special area */
-	    fprintf(tfp, "/>\n<path d=\"M ");
-	    for (i = 0; i < nfillpoints; ++i) {
-		fprintf(tfp, "%d,%d ", fillpoints[i].x ,
-			fillpoints[i].y );
-	    }
-	    fprintf(tfp, "z\"\n\tstroke=\"#%6.6x\" stroke-width=\"%dpx\"",
-		    rgbColorVal(pen_color),
-		    (int) ceil(linewidth_adj((int)arrow->thickness)));
-	    fprintf(tfp, " stroke-miterlimit=\"8\" fill=\"#%6.6x\"/>\n",
-		    rgbColorVal(pen_color));
-	}
-    } else
-      fprintf(tfp, "/>\n");
-#ifdef DEBUG
-    /* paint the clip path */
-    if (nclippoints) {
-	fputs("<!-- clip path -->\n<path d=\"M", tfp);
-	for (i = 0; i < nclippoints; ++i)
-	    fprintf(tfp,"%d,%d ", clippoints[i].x, clippoints[i].y);
-	fputs("z\"\n\tstroke=\"red\" opacity=\"0.5\" stroke-width=\"10px\" stroke-miterlimit=\"8\"/>\n", tfp);
-    }
-#endif
+	fprintf(tfp, "</%sPoints>\n",
+	    (points[0].x == points[npoints-1].x &&
+	     points[0].y == points[npoints-1].y ? "Polygon" : "Polyline"));
+	fputs("\t\t\t\t<Line>\n", tfp);
+	fprintf(tfp, "\t\t\t\t\t<LineColor>#%6.6x</LineColor>\n", rgbColorVal(pen_color));
+	fprintf(tfp, "\t\t\t\t\t<LineWeight>%dpx</LineWeight>\n", (int) ceil(linewidth_adj(arrow->thickness)));
+	fputs("\t\t\t\t</Line>\n", tfp);
+	fputs("\t\t\t</Shape>\n", tfp);
 }
 
 static bool
@@ -1032,44 +908,27 @@ vdx_arrows(int line_thickness, F_arrow *for_arrow, F_arrow *back_arrow,
 	    return false;
     }
 
-    if (pen_color == CLIP) {
-	fprintf(tfp, "<clipPath id=\"cp%d\">\n", ++clipno);
-	fprintf(tfp,
-		"\t<path clip-rule=\"evenodd\" d=\"M %d,%d H %d V %d H %d z",
-		llx, lly, urx, ury, llx);
-	if (fnclippoints) {
-	    fprintf(tfp, "\n\t\tM %d,%d", fclippoints[0].x,fclippoints[0].y);
-	    for (i = 1; i < fnclippoints; ++i)
-		fprintf(tfp, " %d,%d", fclippoints[i].x, fclippoints[i].y);
-	    fputc('z', tfp);
-	}
-	if (bnclippoints) {
-	    fprintf(tfp, "\n\t\tM %d,%d", bclippoints[0].x,bclippoints[0].y);
-	    for (i = 1; i < bnclippoints; ++i)
-		fprintf(tfp, " %d,%d", bclippoints[i].x, bclippoints[i].y);
-	    fputc('z', tfp);
-	}
-	fputs("\"/>\n</clipPath>\n", tfp);
-	return true;
-    }
-
+	fputs("\t\t\t<Shape ID='1' Name='ArrowHead' Type='Shape'>\n", tfp);
     if (for_arrow) {
-	fputs("<!-- Forward arrow", tfp);
+	fputs("\t\t\t\t<Arrow>", tfp);
 	arrow_path(for_arrow, forw2, pen_color, fnpoints, fpoints,
 		fnfillpoints, ffillpoints
+	
 #ifdef DEBUG
 		, fnclippoints, fclippoints
 #endif
 		);
+	
     }
     if (back_arrow) {
-	fputs("<!-- Backward arrow", tfp);
+	fputs("\t\t\t\t<Arrow>", tfp);
 	arrow_path(back_arrow, back2, pen_color, bnpoints, bpoints,
 		bnfillpoints, bfillpoints
 #ifdef DEBUG
 		, bnclippoints, bclippoints
 #endif
 		);
+
     }
     return true;
 }
@@ -1149,50 +1008,40 @@ generate_tile(int number, int colorIndex)
 	{"width=\"134\" height=\"134\">",
 	 "\"m63,-4 67,67 -67,67 20,20\""},
     };
-
-    fprintf(tfp,
-	    "<pattern id=\"tile%d\" patternUnits=\"userSpaceOnUse\"\n",
-	    ++tileno);
-    fputs("\tx=\"0\" y=\"0\" ", tfp);
-    fputs(pattern[number - 1].size, tfp);
-    /* Draw pattern lines with a width of .45 bp ( = 7.5 Fig units at
-       ppi = 1200), consistent with line widths in gentikz.c.
-       In genps.c, patterns are drawn with a linewidth of 1 bp
-       ( = 16.6 Fig units, at 1200 ppi), or .7 bp ( = 11.7 Fig units). */
-    fprintf(tfp,
-	    "\n<g stroke-width=\"%.2g\" stroke=\"#%6.6x\" fill=\"none\">\n",
-	    0.5*ppi/80., rgbColorVal(colorIndex));
-    fputs("<path d=", tfp);
-    fputs(pattern[number - 1].code, tfp);
-    fputs("/>\n</g>\n</pattern>\n", tfp);
+	// Pattern
+	fputs("\t\t\t\t\t<Pattern>\n", tfp);
+	fprintf(tfp, "\t\t\t\t\t\t<PatternID>%d</PatternID>\n", ++tileno);
+	fprintf(tfp, "\t\t\t\t\t\t<LineWidth>%.2g</LineWidth>\n", 0.5*ppi/80.);
+	fprintf(tfp, "\t\t\t\t\t\t<LineColor>#%6.6x</LineColor>\n", rgbColorVal(colorIndex));
 }
 
 static void
 vdx_dash(int style, double val)
 {
-	fprintf(tfp, " stroke-dasharray=\"");
+	fputs("\t\t\t\t\t<DashArray>", tfp);
 	switch(style) {
 	case 1:
 	default:
-		fprintf(tfp,"%ld %ld\"", lround(val*10), lround(val*10));
+		fprintf(tfp,"%ld %ld", lround(val*10), lround(val*10));
 		break;
 	case 2:
-		fprintf(tfp,"10 %ld\"", lround(val*10));
+		fprintf(tfp,"10 %ld", lround(val*10));
 		break;
 	case 3:
-		fprintf(tfp,"%ld %ld 10 %ld\"", lround(val*10),
+		fprintf(tfp,"%ld %ld 10 %ld", lround(val*10),
 			lround(val*5), lround(val*5));
 		break;
 	case 4:
-		fprintf(tfp,"%ld %ld 10 %ld 10 %ld\"", lround(val*10),
+		fprintf(tfp,"%ld %ld 10 %ld 10 %ld", lround(val*10),
 			lround(val*3), lround(val*3), lround(val*3));
 		break;
 	case 5:
-		fprintf(tfp,"%ld %ld 10 %ld 10 %ld 10 %ld\"", lround(val*10),
+		fprintf(tfp,"%ld %ld 10 %ld 10 %ld 10 %ld", lround(val*10),
 			lround(val*3), lround(val*3), lround(val*3),
 			lround(val*3));
 		break;
 	}
+	fputs("</DashArray>\n", tfp);
 }
 
 /* driver defs */
