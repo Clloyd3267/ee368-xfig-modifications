@@ -745,8 +745,8 @@ genvdx_ellipse(F_ellipse *e)
 
 		// XForm
 		fputs("\t\t\t\t<XForm>\n", tfp);
-		fprintf(tfp, "\t\t\t\t\t<PinX F='Inh'>%d</PinX>\n", cx); // center x coord
-		fprintf(tfp, "\t\t\t\t\t<PinY F='Inh'>%d</PinY>\n", cy); // center y coord
+		fprintf(tfp, "\t\t\t\t\t<PinX>%d</PinX>\n", cx); // center x coord
+		fprintf(tfp, "\t\t\t\t\t<PinY>%d</PinY>\n", cy); // center y coord
 		fprintf(tfp, "\t\t\t\t\t<Width>%d</Width>\n", rx); // width
 		fprintf(tfp, "\t\t\t\t\t<Height>%d</Height>\n", ry); // height
 		fputs("\t\t\t\t</XForm>\n", tfp);
@@ -785,22 +785,25 @@ genvdx_text(F_text *t)
     int y = t->base_y ;
     int dy = 0;
 
-    fprintf(tfp, "<!-- Text -->\n");
-    print_comments("<!-- ", t->comments, " -->");
+	// Shape
+	fputs("\t\t\t<Shape ID='1' Name='Text' Type='Shape'>\n", tfp);
+	fputs("\t\t\t\t<Text>", tfp);
+    //fprintf(tfp, "<!-- Text -->\n");
+    //print_comments("<!-- ", t->comments, " -->");
 
-    if (t->angle != 0.) {
-	fprintf(tfp, "<g transform=\"translate(%d,%d) rotate(%.0f)\" >\n",
-		 x, y, degrees(t->angle));
-	x = y = 0;
-    }
-    fputs("<text xml:space=\"preserve\" ", tfp);
-    fprintf(tfp, "x=\"%d\" y=\"%d\" fill=\"#%6.6x\" font-family=\"%s\" ",
-		x, y, rgbColorVal(t->color), family[t->font / 4]);
-    fprintf(tfp,
-	"font-style=\"%s\" font-weight=\"%s\" font-size=\"%d\" text-anchor=\"%s\">",
-	 ((t->font % 2 == 0 || t->font > 31) ? "normal" : "italic"),
-	 ((t->font % 4 < 2 || t->font > 31) ? "normal" : "bold"),
-	 (int)ceil(t->size * 12), anchor[t->type]);
+    // if (t->angle != 0.) {
+	// fprintf(tfp, "<g transform=\"translate(%d,%d) rotate(%.0f)\" >\n",
+		 // x, y, degrees(t->angle));
+	// x = y = 0;
+    // }
+    // fputs("<text xml:space=\"preserve\" ", tfp);
+    // fprintf(tfp, "x=\"%d\" y=\"%d\" fill=\"#%6.6x\" font-family=\"%s\" ",
+		// x, y, rgbColorVal(t->color), family[t->font / 4]);
+    // fprintf(tfp,
+	// "font-style=\"%s\" font-weight=\"%s\" font-size=\"%d\" text-anchor=\"%s\">",
+	 // ((t->font % 2 == 0 || t->font > 31) ? "normal" : "italic"),
+	 // ((t->font % 4 < 2 || t->font > 31) ? "normal" : "bold"),
+	 // (int)ceil(t->size * 12), anchor[t->type]);
 
     if (t->font == 32) {
 	for (cp = (unsigned char *) t->cstring; *cp; cp++) {
@@ -879,9 +882,47 @@ genvdx_text(F_text *t)
 #ifdef NOSUPER
     if (dy != 0) fprintf(tfp,"</tspan>");
 #endif
-    fprintf(tfp, "</text>\n");
-    if (t->angle != 0)
-	fprintf(tfp, "</g>");
+	
+    // fprintf(tfp, "</text>\n");
+	fputs("</Text>\n", tfp);
+	
+	// XForm
+	// if (t->angle != 0.) {
+	// fprintf(tfp, "<g transform=\"translate(%d,%d) rotate(%.0f)\" >\n",
+		 // x, y, degrees(t->angle));
+	// x = y = 0;
+    // }
+	fputs("\t\t\t\t<XForm>\n", tfp);
+	fprintf(tfp, "\t\t\t\t\t<PinX>%d</PinX>\n", x); // center x coord
+	fprintf(tfp, "\t\t\t\t\t<PinY>%d</PinY>\n", y); // center y coord
+	fprintf(tfp, "\t\t\t\t\t<Angle>%.0f</Angle>\n", degrees(t->angle));
+	fputs("\t\t\t\t</XForm>\n", tfp);
+
+	// Fill
+	fputs("\t\t\t\t<Fill>\n", tfp);
+	fprintf(tfp, "\t\t\t\t\t<FillColor>#%6.6x</FillColor>\n", rgbColorVal(t->color));
+	fputs("\t\t\t\t</Fill>\n", tfp);
+	
+	// Font
+	fputs("\t\t\t\t<Font>\n", tfp);
+	fprintf(tfp, "\t\t\t\t\t<Font>%s</Font>\n\t\t\t\t\t<FontSize>%d</FontSize>\n",
+		family[t->font / 4],
+		(int)ceil(t->size * 12));
+
+	
+    // fputs("<text xml:space=\"preserve\" ", tfp);
+    // fprintf(tfp, "x=\"%d\" y=\"%d\" fill=\"#%6.6x\" font-family=\"%s\" ",
+		// x, y, rgbColorVal(t->color), family[t->font / 4]);
+    // fprintf(tfp,
+	// "font-style=\"%s\" font-weight=\"%s\" font-size=\"%d\" text-anchor=\"%s\">",
+	 // ((t->font % 2 == 0 || t->font > 31) ? "normal" : "italic"),
+	 // ((t->font % 4 < 2 || t->font > 31) ? "normal" : "bold"),
+	 // (int)ceil(t->size * 12), anchor[t->type]);
+	fputs("\t\t\t\t</Font>\n", tfp);
+	fputs("\t\t\t</Shape>\n", tfp);
+
+    // if (t->angle != 0)
+	// fprintf(tfp, "</g>");
 }
 
 static void
