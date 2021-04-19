@@ -1,43 +1,3 @@
- /*
- *	* Correct color values;
- *	  hex codes see Fig_color_names in fig2dev.c, or, identical,
-	  colorNames in xfig/src/resources.c
- *		colorNames	Fig_color_names	vdx name
- *	0	"black"		"#000000"	black
- *	1	"blue"		"#0000ff"	blue
- *	2	"green"		"#00ff00"	lime
- *	3	"cyan"		"#00ffff"	cyan
- *	4	"red"		"#ff0000"	red
- *	5	"magenta"	"#ff00ff"	magenta
- *	6	"yellow"	"#ffff00"	yellow
- *	7	"white"		"#ffffff"	white
- *	8	"#000090"	"#000090" 144
- *	9	"#0000b0"	"#0000b0" 176
- *	10	"#0000d0"	"#0000d0" 208
- *	11	"#87ceff"	"#87ceff" 135 206
- *	12	"#009000"	"#009000"
- *	13	"#00b000"	"#00b000"
- *	14	"#00d000"	"#00d000"
- *	15	"#009090"	"#009090"
- *	16	"#00b0b0"	"#00b0b0"
- *	17	"#00d0d0"	"#00d0d0"
- *	18	"#900000"	"#900000"
- *	19	"#b00000"	"#b00000"
- *	20	"#d00000"	"#d00000"
- *	21	"#900090"	"#900090"
- *	22	"#b000b0"	"#b000b0"
- *	23	"#d000d0"	"#d000d0"
- *	24	"#803000"	"#803000" 128 48
- *	25	"#a04000"	"#a04000" 160 64
- *	26	"#c06000"	"#c06000" 192 96
- *	27	"#ff8080"	"#ff8080"
- *	28	"#ffa0a0"	"#ffa0a0"
- *	29	"#ffc0c0"	"#ffc0c0"
- *	30	"#ffe0e0"	"#ffe0e0"
- *	31	"gold"	        "#ffd700"	gold	(255, 215, 0)
- *
- */
-
 #ifdef HAVE_CONFIG_H
 #include "config.h"
 #endif
@@ -47,7 +7,6 @@
 #include <string.h>
 #include <strings.h>
 #include <math.h>
-//#include <ctype.h>
 #include "bool.h"
 #include "pi.h"
 
@@ -243,31 +202,26 @@ genvdx_option(char opt, char *optarg)
 void
 genvdx_start(F_compound *objects)
 {
-    struct paperdef	*pd;
-    int     pagewidth = -1, pageheight = -1;
-    int     vw, vh;
-    char    date_buf[CREATION_TIME_LEN];
-    time_t  when;
-    char    stime[80];
+	struct 	paperdef	*pd;
+	int     pagewidth = -1, pageheight = -1;
+	int     vw, vh;
+	char    date_buf[CREATION_TIME_LEN];
+	time_t  when;
+	char    stime[80];
 
-    fprintf(tfp, "%s\n", PREAMBLE);
-    fprintf(tfp, "<!-- Creator: %s Version %s -->\n",
-		  prog, PACKAGE_VERSION);
+	fprintf(tfp, "%s\n", PREAMBLE);
 
-    if (creation_date(date_buf))
-	fprintf(tfp, "<!-- CreationDate: %s -->\n", date_buf);
-    fprintf(tfp, "<!-- Magnification: %.3g -->\n", mag);
+	paperspec = true;
 
-
-    if (paperspec) {
+	if (paperspec) {
 	/* convert paper size from ppi to inches */
 	for (pd = paperdef; pd->name != NULL; ++pd)
-	    if (strcasecmp(papersize, pd->name) == 0) {
-		pagewidth = pd->width;
-		pageheight = pd->height;
-		strcpy(papersize, pd->name);	/* use the "nice" form */
-		break;
-	    }
+		if (strcasecmp(papersize, pd->name) == 0) {
+			pagewidth = pd->width;
+			pageheight = pd->height;
+			strcpy(papersize, pd->name);	/* use the "nice" form */
+			break;
+		}
 	if (pagewidth < 0 || pageheight < 0) {
 	    (void) fprintf(stderr, "Unknown paper size `%s'\n", papersize);
 	    exit(1);
@@ -283,24 +237,34 @@ genvdx_start(F_compound *objects)
 	vw = ceil((urx - llx) * 72. * mag / ppi);
 	vh = ceil((ury - lly) * 72. * mag / ppi);
     }
-	
+
 	// Change these to the proper vdx stuff
-    fputs("<VisioDocument\n\txmlns=\"http://schemas.microsoft.com/visio/2003/core\"\n", tfp);
-    fputs("\txmlns:xlink=\"http://www.w3.org/1999/xlink\"\n", tfp);
-    fprintf(tfp,
-	"\twidth=\"%dpt\" height=\"%dpt\"\n\tviewBox=\"%d %d %d %d\">\n",
-	vw, vh, llx, lly, urx - llx , ury - lly);
+    	// Visio Document Line
+	fputs("<VisioDocument xmlns=\"http://schemas.microsoft.com/visio/2003/core\" ", tfp);
+    	fputs("xmlns:xlink=\"http://www.w3.org/1999/xlink\">\n", tfp);
+	// Document Properties Lines
+	fprintf(tfp, "\t<DocumentPropterties>\n");
+	fprintf(tfp, "\t\t<Creator>%s Version %s</Creator>\n", prog, PACKAGE_VERSION);
+	if (creation_date(date_buf))
+		fprintf(tfp, "\t\t<TimeCreated>%s</TimeCreated>\n", date_buf);
+	fprintf(tfp, "\t</DocumentProperties>\n");
+
+	// Pages and Page Sections
+	fputs("\t<Pages>\n", tfp);
+	fputs("\t\t<PageSheet>\n", tfp);
+	fputs("\t\t\t<PageProps>\n", tfp);
+	fprintf(tfp, "\t\t\t\t<PageWidth>%d</PageWidth>\n", vw);
 
     if (objects->comments)
 	print_comments("<desc>", objects->comments, "</desc>");
-    fputs("<Shapes fill=\"none\">\n", tfp);
+//    fputs("<Shapes>\n", tfp);
 
 }
 
 int
 genvdx_end(void)
 {
-    fprintf(tfp, "</Shapes>\n</vdx>\n");
+    fprintf(tfp, "</VisioDocument>");
     return 0;
 }
 
@@ -319,6 +283,7 @@ genvdx_end(void)
 	if (fill_style == UNFILLED)				\
 		fputs("</defs>\n", tfp)
 
+// No idea what this does
 void
 continue_paint_vdx(int fill_style, int pen_color, int fill_color)
 {
@@ -335,6 +300,7 @@ continue_paint_vdx(int fill_style, int pen_color, int fill_color)
     }
 }
 
+// No idea what this does
 void
 continue_paint_w_clip_vdx(int fill_style, int pen_color, int fill_color)
 {
@@ -358,6 +324,7 @@ continue_paint_w_clip_vdx(int fill_style, int pen_color, int fill_color)
     fprintf(tfp, " clip-path=\"url(#cp%d)\"", clipno);
 }
 
+// For lines
 void
 genvdx_line(F_line *l)
 {
@@ -525,7 +492,7 @@ genvdx_line(F_line *l)
 			(F_pos *)l->points, l->pen_color);
     }	/* l->type == T_POLYLINE */
 }
-
+// For circles
 void
 genvdx_spline( /* not used by fig2dev */
 	F_spline *s)
@@ -543,6 +510,7 @@ genvdx_spline( /* not used by fig2dev */
     fprintf(tfp, "\"/>\n");
 }
 
+// For Arcs
 void
 genvdx_arc(F_arc *a)
 {
@@ -642,23 +610,31 @@ genvdx_arc(F_arc *a)
 			&forw1, &forw2, &back1, &back2, a->pen_color);
 }
 
+//For Ellipses
 void
 genvdx_ellipse(F_ellipse *e)
 {
-    int cx = e->center.x ;
-    int cy = e->center.y ;
+	int cx = e->center.x ;
+	int cy = e->center.y ;
 
-    if (e->type == T_CIRCLE_BY_RAD || e->type == T_CIRCLE_BY_DIA) {
-	int r = e->radiuses.x ;
-	fputs("<Shape ", tfp);
+	if (e->type == T_CIRCLE_BY_RAD || e->type == T_CIRCLE_BY_DIA) {
+		int r = e->radiuses.x ;
+		fputs("\t\t\t\t<Shape ", tfp);
+		fputs("ID='1' ", tfp);
+		if(e->type == T_CIRCLE_BY_RAD) {
+			fputs("Name='Circle by Radius' ", tfp);
+		}
+		else if(e->type == T_CIRCLE_BY_DIA) {
+			fputs("Name='Circle by Diameter' ",tfp);
+		}
+		fputs("Type='Shape'>\n", tfp);
 
+		INIT_PAINT(e->fill_style);
 
-	INIT_PAINT(e->fill_style);
-
-	/* paint the object */
-	fprintf(tfp, "<circle cx=\"%d\" cy=\"%d\" r=\"%d\"", cx, cy, r);
-
-    } else { /* T_ELLIPSE_BY_RAD or T_ELLIPSE_BY_DIA */
+		/* paint the object */
+		fprintf(tfp, "<circle cx=\"%d\" cy=\"%d\" r=\"%d\"", cx, cy, r);
+	}
+	else { /* T_ELLIPSE_BY_RAD or T_ELLIPSE_BY_DIA */
 	int rx = e->radiuses.x ;
 	int ry = e->radiuses.y ;
 	fputs("<!-- Ellipse -->\n", tfp);
