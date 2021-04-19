@@ -273,7 +273,9 @@ genvdx_start(F_compound *objects)
 int
 genvdx_end(void)
 {
-    fprintf(tfp, "</VisioDocument>");
+	fputs("\t\t</Shapes>\n", tfp);
+	fputs("\t</Pages>\n", tfp);
+    fputs("</VisioDocument>", tfp);
     return 0;
 }
 
@@ -346,53 +348,70 @@ continue_paint_w_clip_vdx(int fill_style, int pen_color, int fill_color)
 void
 genvdx_line(F_line *l)
 {
-    char	chars;
-    int		px,py;
-    int		px2,py2,width,height,rotation;
-    F_point	*p;
+	char	chars;
+	int		px,py;
+	int		px2,py2,width,height,rotation;
+	F_point	*p;
 
 
-    if (l->type == T_PIC_BOX ) {
-	fprintf(tfp,"<!-- Image -->\n");
-	fprintf(tfp,
-	    "<image xlink:href=\"file://%s\" preserveAspectRatio=\"none\"\n",
-	    l->pic->file);
-	p = l->points;
-	px = p->x;
-	py = p->y;
-	px2 = p->next->next->x;
-	py2 = p->next->next->y;
-	width = px2 - px;
-	height = py2 - py;
-	rotation = 0;
-	if (width<0 && height < 0)
-		rotation = 180;
-	else if (width < 0 && height >= 0)
-		rotation = 90;
-	else if (width >= 0 && height <0)
-		rotation = 270;
-	if (l->pic->flipped) rotation -= 90;
-	if (width < 0) {
-	    px = px2;
-	    width = -width;
-	}
-	if (height < 0) {
-	    py = py2;
-	    height = -height;
-	}
-	px2 = px + width/2;
-	py2 = py + height/2;
-	if (l->pic->flipped) {
-	    fprintf(tfp,
-		"transform=\"rotate(%d %d %d) scale(-1,1) translate(%d,%d)\"\n",
-		rotation, px2, py2, -2*px2, 0);
-	} else if (rotation !=0) {
-	fprintf(tfp,"transform=\"rotate(%d %d %d)\"\n",rotation,px2,py2);
-	}
+	if (l->type == T_PIC_BOX ) {
+		// Shape
+		fputs("\t\t\t<Shape ", tfp);
+		fputs("ID='1' ", tfp); // We don't know what ID is yet
+		fputs("Name='Image' Type='Shape'>\n", tfp);
+		fprintf(tfp, "\t\t\t\t<ImageLink>xlink:href=\"file://%s\"</ImageLink>\n", l->pic->file);
+		p = l->points;
+		px = p->x;
+		py = p->y;
+		px2 = p->next->next->x;
+		py2 = p->next->next->y;
+		width = px2 - px;
+		height = py2 - py;
+		rotation = 0;
+		if (width<0 && height < 0)
+			rotation = 180;
+		else if (width < 0 && height >= 0)
+			rotation = 90;
+		else if (width >= 0 && height <0)
+			rotation = 270;
+		if (l->pic->flipped) rotation -= 90;
+		if (width < 0) {
+			px = px2;
+			width = -width;
+		}
+		if (height < 0) {
+			py = py2;
+			height = -height;
+		}
+		px2 = px + width/2;
+		py2 = py + height/2;
+		// XForm
+		fputs("\t\t\t\t<XForm>\n", tfp);
+		fprintf(tfp, "\t\t\t\t\t<PinX>%d</PinX>\n", px); // x coord
+		fprintf(tfp, "\t\t\t\t\t<PinY>%d</PinY>\n", py); // y coord
+		fprintf(tfp, "\t\t\t\t\t<Width>%d</Width>\n", width); // width
+		fprintf(tfp, "\t\t\t\t\t<Height>%d</Height>\n", height); // height
 
-	fprintf(tfp,"x=\"%d\" y=\"%d\" width=\"%d\" height=\"%d\"/>\n",
-	px, py, width, height);
-    return;
+
+		if (l->pic->flipped) {
+			fprintf(tfp, "\t\t\t\t\t<Rotation>(%d %d %d)</Rotation>\n", rotation, px2, py2); // rotation
+			fprintf(tfp, "\t\t\t\t\t<Scale>(-1, 1)</Scale>\n"); // scale
+			fprintf(tfp, "\t\t\t\t\t<Translation>(%d, %d)</Translation>\n", -2*px2, 0); // translation
+
+			// fprintf(tfp,
+			// "transform=\"rotate(%d %d %d) scale(-1,1) translate(%d,%d)\"\n",
+			// rotation, px2, py2, -2*px2, 0);
+		} else if (rotation !=0) {
+			fprintf(tfp, "\t\t\t\t\t<Rotation>(%d %d %d)</Rotation>\n", rotation, px2, py2); // rotation
+
+			// fprintf(tfp,"transform=\"rotate(%d %d %d)\"\n",rotation,px2,py2);
+		}
+		fputs("\t\t\t\t</XForm>\n", tfp);
+		fputs("\t\t\t</Shape>\n", tfp);
+		
+		// fprintf(tfp,"x=\"%d\" y=\"%d\" width=\"%d\" height=\"%d\"/>\n",
+		// px, py, width, height);
+		return;
     }
 
     if (l->thickness <= 0 && l->fill_style == UNFILLED &&
@@ -400,23 +419,30 @@ genvdx_line(F_line *l)
 	return;
 
     /* l->type == T_BOX, T_ARC_BOX, T_POLYGON or T_POLYLINE */
-    fprintf(tfp, "<!-- Line -->\n");
-    print_comments("<!-- ", l->comments, " -->");
 
     if (l->type == T_BOX || l->type == T_ARC_BOX || l->type == T_POLYGON) {
 
 	INIT_PAINT(l->fill_style);
 
+	// Shape
+	fputs("\t\t\t<Shape ", tfp);
+	fputs("ID='1' ", tfp); // We don't know what ID is yet
+
 	if (l->type == T_POLYGON) {
-	    chars = fputs("<polygon points=\"", tfp);
+	    // chars = fputs("<polygon points=\"", tfp);
+		chars = fputs("Name='Polygon' Type='Shape'>\n", tfp);
+		// XForm
+		fputs("\t\t\t\t<XForm>\n", tfp);
+		fputs("\t\t\t\t\t<PolyPoints>", tfp);
 	    for (p = l->points; p->next; p = p->next) {
-		chars += fprintf(tfp, " %d,%d", p->x , p->y);
-		if (chars > SVG_LINEWIDTH) {
-		    fputc('\n', tfp);
-		    chars = 0;
-		}
+		chars += fprintf(tfp, "%d, %d", p->x , p->y);
+		// if (chars > SVG_LINEWIDTH) {
+		    // fputc('\n', tfp);
+		    // chars = 0;
+		// }
 	    }
-	    fputc('\"', tfp);
+		fputs("</PolyPoints>\n", tfp);
+		fputs("\t\t\t\t</XForm>\n", tfp);
 	} 
 	else {	/* T_BOX || T_ARC_BOX */
 	    px = l->points->next->next->x;
@@ -431,10 +457,7 @@ genvdx_line(F_line *l)
 		py = l->points->y;
 		height = -height;
 	    }
-
-		// Shape
-		fputs("\t\t\t<Shape ", tfp);
-		fputs("ID='1' ", tfp); // We don't know what ID is yet
+		
 		if (l->type == T_BOX) {	
 			fputs("Name='Box' Type='Shape'>\n", tfp);
 		}
@@ -480,6 +503,7 @@ genvdx_line(F_line *l)
 			vdx_dash(l->style, l->style_val);
 	}
 	fputs("\t\t\t\t</Line>\n", tfp);
+	fputs("\t\t\t</Shape>\n", tfp);
 
 	return;
 	}
@@ -507,37 +531,52 @@ genvdx_line(F_line *l)
 	    INIT_PAINT(l->fill_style);
 	}
 
-	chars = fputs("<polyline points=\"", tfp);
+	// Shape
+	fputs("\t\t\t<Shape ", tfp);
+	fputs("ID='1' ", tfp); // We don't know what ID is yet
+	fputs("Name='PolyLine' Type='Shape'>\n", tfp);
+	// XForm
+	fputs("\t\t\t\t<XForm>\n", tfp);
+	chars = fputs("\t\t\t\t\t<PolyLinePoints>", tfp);
+
+	// chars = fputs("<polyline points=\"", tfp);
 	for (p = l->points; p; p = p->next) {
-	    chars += fprintf(tfp, " %d,%d", p->x , p->y);
-	    if (chars > SVG_LINEWIDTH) {
-		fputc('\n', tfp);
-		chars = 0;
-	    }
+	    chars += fprintf(tfp, "%d, %d", p->x , p->y);
+	    // if (chars > SVG_LINEWIDTH) {
+		// fputc('\n', tfp);
+		// chars = 0;
+	    // }
 	}
-	fputc('\"', tfp);
+	fputs("</PolyLinePoints>\n", tfp);
+	fputs("\t\t\t\t</XForm>\n", tfp);
 
 	if (has_clip)
 	    continue_paint_w_clip_vdx(l->fill_style, l->pen_color, l->fill_color);
 	else
 	    continue_paint_vdx(l->fill_style, l->pen_color, l->fill_color);
 
+	// Line
+	fputs("\t\t\t\t<Line>\n", tfp);
 	if (l->thickness) {
-	    fprintf(tfp, "\n\tstroke=\"#%6.6x\" stroke-width=\"%dpx\"",
-		    rgbColorVal(l->pen_color),
-		    (int) ceil(linewidth_adj(l->thickness)));
+		fprintf(tfp, "\t\t\t\t\t<LineColor>#%6.6x</LineColor>\n", rgbColorVal(l->pen_color));
+		fprintf(tfp, "\t\t\t\t\t<LineWeight>%dpx</LineWeight>\n", (int) ceil(linewidth_adj(l->thickness)));
+	    // fprintf(tfp, "\n\tstroke=\"#%6.6x\" stroke-width=\"%dpx\"",
+		    // rgbColorVal(l->pen_color),
+		    // (int) ceil(linewidth_adj(l->thickness)));
 	    put_joinstyle(l->join_style);
 	    put_capstyle(l->cap_style);
 	    if (l->style > SOLID_LINE)
 		vdx_dash(l->style, l->style_val);
 	}
-
-	fputs("/>\n", tfp);
+	fputs("\t\t\t\t</Line>\n", tfp);
+	fputs("\t\t\t</Shape>\n", tfp);
+	// fputs("/>\n", tfp);
 	if (l->for_arrow || l->back_arrow)
 	    (void) vdx_arrows(l->thickness, l->for_arrow, l->back_arrow,
 			&(l->last[1]), l->last, (F_pos *)l->points->next,
 			(F_pos *)l->points, l->pen_color);
     }	/* l->type == T_POLYLINE */
+	
 }
 // For circles
 void
@@ -729,6 +768,7 @@ genvdx_ellipse(F_ellipse *e)
 		vdx_dash(e->style, e->style_val);
 	}
 	fputs("\t\t\t\t</Line>\n", tfp);
+	fputs("\t\t\t</Shape>\n", tfp);
 }
 
 void
