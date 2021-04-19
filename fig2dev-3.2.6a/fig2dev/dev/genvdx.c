@@ -214,29 +214,31 @@ genvdx_start(F_compound *objects)
 	paperspec = true;
 
 	if (paperspec) {
-	/* convert paper size from ppi to inches */
-	for (pd = paperdef; pd->name != NULL; ++pd)
-		if (strcasecmp(papersize, pd->name) == 0) {
-			pagewidth = pd->width;
-			pageheight = pd->height;
-			strcpy(papersize, pd->name);	/* use the "nice" form */
-			break;
+		/* convert paper size from ppi to inches */
+		for (pd = paperdef; pd->name != NULL; ++pd)
+			if (strcasecmp(papersize, pd->name) == 0) {
+				pagewidth = pd->width;
+				pageheight = pd->height;
+				strcpy(papersize, pd->name);	/* use the "nice" form */
+				break;
+			}
+		if (pagewidth < 0 || pageheight < 0) {
+			(void) fprintf(stderr, "Unknown paper size `%s'\n", papersize);
+			exit(1);
 		}
-	if (pagewidth < 0 || pageheight < 0) {
-	    (void) fprintf(stderr, "Unknown paper size `%s'\n", papersize);
-	    exit(1);
+		if (landscape) {
+			vh = pagewidth;
+			vw = pageheight;
+		}
+		else {
+			vw = pagewidth;
+			vh = pageheight;
+		}
 	}
-	if (landscape) {
-	    vh = pagewidth;
-	    vw = pageheight;
-	} else {
-	    vw = pagewidth;
-	    vh = pageheight;
+	else {
+		vw = ceil((urx - llx) * 72. * mag / ppi);
+		vh = ceil((ury - lly) * 72. * mag / ppi);
 	}
-    } else {
-	vw = ceil((urx - llx) * 72. * mag / ppi);
-	vh = ceil((ury - lly) * 72. * mag / ppi);
-    }
 
 	// Change these to the proper vdx stuff
     	// Visio Document Line
@@ -253,11 +255,18 @@ genvdx_start(F_compound *objects)
 	fputs("\t<Pages>\n", tfp);
 	fputs("\t\t<PageSheet>\n", tfp);
 	fputs("\t\t\t<PageProps>\n", tfp);
-	fprintf(tfp, "\t\t\t\t<PageWidth>%d</PageWidth>\n", vw);
+	fprintf(tfp, "\t\t\t\t<PageWidth>%d</PageWidth>\n", pagewidth); // Fix these values
+	fprintf(tfp, "\t\t\t\t<PageHeight>%d</PageHeight>\n", pageheight);
+   	// Comments Section
+	if (objects->comments)
+		print_comments("<desc>", objects->comments, "</desc>");
 
-    if (objects->comments)
-	print_comments("<desc>", objects->comments, "</desc>");
-//    fputs("<Shapes>\n", tfp);
+	// End of Page Sections
+	fputs("\t\t\t</PageProps>\n", tfp);
+	fputs("\t\t</PageSheet>\n", tfp);
+
+	// Begin Shapes
+	fputs("\t\t<Shapes>\n", tfp);
 
 }
 
@@ -619,8 +628,9 @@ genvdx_ellipse(F_ellipse *e)
 
 	if (e->type == T_CIRCLE_BY_RAD || e->type == T_CIRCLE_BY_DIA) {
 		int r = e->radiuses.x ;
-		fputs("\t\t\t\t<Shape ", tfp);
-		fputs("ID='1' ", tfp);
+		int diam = r*2;
+		fputs("\t\t\t<Shape ", tfp);
+		fputs("ID='1' ", tfp); // We don't know what ID is yet
 		if(e->type == T_CIRCLE_BY_RAD) {
 			fputs("Name='Circle by Radius' ", tfp);
 		}
@@ -629,39 +639,58 @@ genvdx_ellipse(F_ellipse *e)
 		}
 		fputs("Type='Shape'>\n", tfp);
 
+
 		INIT_PAINT(e->fill_style);
 
-		/* paint the object */
-		fprintf(tfp, "<circle cx=\"%d\" cy=\"%d\" r=\"%d\"", cx, cy, r);
+		// XForm
+		fputs("\t\t\t\t<XForm>\n", tfp);
+		fprintf(tfp, "\t\t\t\t\t<PinX F='Inh'>%d</PinX>\n", cx);
+		fprintf(tfp, "\t\t\t\t\t<PinY F='Inh'>%d</PinY>\n", cy);
+		fprintf(tfp, "\t\t\t\t\t<Width>%d</Width>\n", diam);
+		fprintf(tfp, "\t\t\t\t\t<Height>%d</Height>\n", diam);
+		fputs("\t\t\t\t</XForm>\n", tfp);
 	}
 	else { /* T_ELLIPSE_BY_RAD or T_ELLIPSE_BY_DIA */
-	int rx = e->radiuses.x ;
-	int ry = e->radiuses.y ;
-	fputs("<!-- Ellipse -->\n", tfp);
-	print_comments("<!-- ", e->comments, " -->");
+		int rx = e->radiuses.x ;
+		int ry = e->radiuses.y ;
+		fputs("\t\t\t<Shape ", tfp);
+		fputs("ID='1' ", tfp); // We don't know what ID is yet
+		if(e->type == T_ELLIPSE_BY_RAD) {
+			fputs("Name='Ellipse by Radius' ", tfp);
+		}
+		else if(e->type == T_ELLIPSE_BY_DIA) {
+			fputs("Name='Ellipse by Diameter' ",tfp);
+		}
+		fputs("Type='Shape'>\n", tfp);
 
-	INIT_PAINT(e->fill_style);
 
-	/* now paint object */
-	if (e->angle == 0.0)
-	    fprintf(tfp, "<ellipse cx=\"%d\" cy=\"%d\"", cx, cy);
-	else
-	    fprintf(tfp,
-		    "<ellipse transform=\"translate(%d,%d) rotate(%.0f)\"",
-		    cx, cy, degrees(e->angle));
-	fprintf(tfp, " rx=\"%d\" ry=\"%d\"", rx, ry);
+		INIT_PAINT(e->fill_style);
+
+		// XForm
+		fputs("\t\t\t\t<XForm>\n", tfp);
+		fprintf(tfp, "\t\t\t\t\t<PinX F='Inh'>%d</PinX>\n", cx); // center x coord
+		fprintf(tfp, "\t\t\t\t\t<PinY F='Inh'>%d</PinY>\n", cy); // center y coord
+		fprintf(tfp, "\t\t\t\t\t<Width>%d</Width>\n", rx); // width
+		fprintf(tfp, "\t\t\t\t\t<Height>%d</Height>\n", ry); // height
+		fputs("\t\t\t\t</XForm>\n", tfp);
+
     } /* end T_CIRCLE... or T_ELLIPSE... */
 
-    continue_paint_vdx(e->fill_style, e->pen_color, e->fill_color);
+	// Line
+	fputs("\t\t\t\t<Line>\n", tfp);
 
-    if (e->thickness) {
-	fprintf(tfp, "\n\tstroke=\"#%6.6x\" stroke-width=\"%dpx\"",
-		rgbColorVal(e->pen_color),
-		(int) ceil(linewidth_adj(e->thickness)));
+	continue_paint_vdx(e->fill_style, e->pen_color, e->fill_color);
+
+	if (e->thickness) {
+		fprintf(tfp, "\t\t\t\t\t<LineColor>#%6.6x</LineColor>\n", rgbColorVal(e->pen_color));
+		fprintf(tfp, "\t\t\t\t\t<LineWeight>%dpx</LineWeight>\n", (int) ceil(linewidth_adj(e->thickness)));
+		// fprintf(tfp, "\n\tstroke=\"#%6.6x\" stroke-width=\"%dpx\"",
+			// rgbColorVal(e->pen_color),
+				// (int) ceil(linewidth_adj(e->thickness)));
 	if (e->style > SOLID_LINE)
-	    vdx_dash(e->style, e->style_val);
-    }
-    fputs("/>\n", tfp);
+		vdx_dash(e->style, e->style_val);
+	}
+	fputs("\t\t\t\t</Line>\n", tfp);
 }
 
 void
