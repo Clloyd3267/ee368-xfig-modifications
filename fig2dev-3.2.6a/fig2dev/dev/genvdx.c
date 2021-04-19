@@ -292,7 +292,7 @@ genvdx_end(void)
 	if (fill_style == UNFILLED)				\
 		fputs("</defs>\n", tfp)
 
-// No idea what this does
+// Used for fill
 void
 continue_paint_vdx(int fill_style, int pen_color, int fill_color)
 {
@@ -305,7 +305,10 @@ continue_paint_vdx(int fill_style, int pen_color, int fill_color)
 	fprintf(tfp, "<use xlink:href=\"#p%d\" fill=\"url(#tile%d)\"",
 		pathno, tileno);
     } else if (fill_style > UNFILLED) {	/* && fill_style <= NUMFILLS */
-	fprintf(tfp, " fill=\"#%6.6x\"", rgbFillVal(fill_color, fill_style));
+	// Fill
+	fputs("\t\t\t\t<Fill>\n", tfp);
+	fprintf(tfp, "\t\t\t\t\t<FillColor>#%6.6x</FillColor>\n", rgbFillVal(fill_color, fill_style));
+	fputs("\t\t\t\t</Fill>\n", tfp);
     }
 }
 
@@ -321,12 +324,18 @@ continue_paint_w_clip_vdx(int fill_style, int pen_color, int fill_color)
 	fputs("</defs>\n", tfp);
 	fprintf(tfp, "<use xlink:href=\"#p%d\" ", pathno);
 	if (fill_style > NUMFILLS) {
-	    fprintf(tfp, "fill=\"#%6.6x\"/>\n", rgbColorVal(fill_color));
+		fputs("\t\t\t\t<Fill>\n", tfp);
+		fprintf(tfp, "\t\t\t\t\t<FillColor>#%6.6x</FillColor>\n", rgbColorVal(fill_color));
+		fputs("\t\t\t\t</Fill>\n", tfp);
+	    // fprintf(tfp, "fill=\"#%6.6x\"/>\n", rgbColorVal(fill_color));
 	    fprintf(tfp, "<use xlink:href=\"#p%d\" fill=\"url(#tile%d)\"/> ",
 		    pathno, tileno);
 	} else {
-	    fprintf(tfp, "fill=\"#%6.6x\"/>\n",
-			rgbFillVal(fill_color, fill_style));
+		fputs("\t\t\t\t<Fill>\n", tfp);
+		fprintf(tfp, "\t\t\t\t\t<FillColor>#%6.6x</FillColor>\n", rgbFillVal(fill_color, fill_style));
+		fputs("\t\t\t\t</Fill>\n", tfp);
+	    // fprintf(tfp, "fill=\"#%6.6x\"/>\n",
+			// rgbFillVal(fill_color, fill_style));
 	}
 	fprintf(tfp, "<use xlink:href=\"#p%d\"", pathno);
     }
@@ -408,7 +417,8 @@ genvdx_line(F_line *l)
 		}
 	    }
 	    fputc('\"', tfp);
-	} else {	/* T_BOX || T_ARC_BOX */
+	} 
+	else {	/* T_BOX || T_ARC_BOX */
 	    px = l->points->next->next->x;
 	    py = l->points->next->next->y;
 	    width = l->points->x - px;
@@ -422,29 +432,57 @@ genvdx_line(F_line *l)
 		height = -height;
 	    }
 
-	    fprintf(tfp, "<rect x=\"%d\" y=\"%d\" width=\"%d\" height=\"%d\"",
-			px, py, width, height);
-	    if (l->type == T_ARC_BOX)
-		fprintf(tfp, " rx=\"%d\"", l->radius);
+		// Shape
+		fputs("\t\t\t<Shape ", tfp);
+		fputs("ID='1' ", tfp); // We don't know what ID is yet
+		if (l->type == T_BOX) {	
+			fputs("Name='Box' Type='Shape'>\n", tfp);
+		}
+		else if (l->type == T_ARC_BOX) {
+			fputs("Name='Arc Box' Type='Shape'>\n", tfp);
+		}
+		
+		
+		// XForm
+		fputs("\t\t\t\t<XForm>\n", tfp);
+		fprintf(tfp, "\t\t\t\t\t<PinX>%d</PinX>\n", px); // x coord
+		fprintf(tfp, "\t\t\t\t\t<PinY>%d</PinY>\n", py); // y coord
+		fprintf(tfp, "\t\t\t\t\t<Width>%d</Width>\n", width); // width
+		fprintf(tfp, "\t\t\t\t\t<Height>%d</Height>\n", height); // height
+		if (l->type == T_ARC_BOX) {
+			fprintf(tfp, "\t\t\t\t\t<Radius>%d</Radius>\n", l->radius); // radius
+			// fprintf(tfp, " rx=\"%d\"", l->radius);
+		}
+		fputs("\t\t\t\t</XForm>\n", tfp);
+
+//	    fprintf(tfp, "<rect x=\"%d\" y=\"%d\" width=\"%d\" height=\"%d\"",
+//			px, py, width, height);
+	    // if (l->type == T_ARC_BOX)
+		// fprintf(tfp, " rx=\"%d\"", l->radius);
 	}
 
     continue_paint_vdx(l->fill_style, l->pen_color, l->fill_color);
 
     /* http://jwatt.org/SVG Authoring Guidelines.html recommends to
        use px unit for stroke width */
-    if (l->thickness) {
-	fprintf(tfp, "\n\tstroke=\"#%6.6x\" stroke-width=\"%dpx\"",
-		rgbColorVal(l->pen_color),
-		(int) ceil(linewidth_adj(l->thickness)));
-	put_joinstyle(l->join_style);
-	put_capstyle(l->cap_style);
-	if (l->style > SOLID_LINE)
-	    vdx_dash(l->style, l->style_val);
-    }
-    fputs("/>\n", tfp);
+	   
+	// Line
+	fputs("\t\t\t\t<Line>\n", tfp);
+	if (l->thickness) {
+		fprintf(tfp, "\t\t\t\t\t<LineColor>#%6.6x</LineColor>\n", rgbColorVal(l->pen_color));
+		fprintf(tfp, "\t\t\t\t\t<LineWeight>%dpx</LineWeight>\n", (int) ceil(linewidth_adj(l->thickness)));
+		//fprintf(tfp, "\n\tstroke=\"#%6.6x\" stroke-width=\"%dpx\"",
+		//	rgbColorVal(l->pen_color),
+		//		(int) ceil(linewidth_adj(l->thickness)));
+		put_joinstyle(l->join_style);
+		put_capstyle(l->cap_style);
+		if (l->style > SOLID_LINE)
+			vdx_dash(l->style, l->style_val);
+	}
+	fputs("\t\t\t\t</Line>\n", tfp);
 
-    return;
-    }
+	return;
+	}
 
     if (l->type == T_POLYLINE) {
 	bool	has_clip = false;
