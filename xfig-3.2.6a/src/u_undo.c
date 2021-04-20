@@ -77,15 +77,15 @@ F_spline	*latest_spline;		/* for undo_join (spline) */
 
 // KAB pointer for last undone action of depth 5
 // KAB top of stack is index 0 and bottom of stack is index 4
-int * last_action = {F_NULL, F_NULL, F_NULL, F_NULL, F_NULL};
+int last_action[] = {F_NULL, F_NULL, F_NULL, F_NULL, F_NULL};
 // KAB redo action stack
-int * redo_action_stack = {F_NULL, F_NULL, F_NULL, F_NULL, F_NULL};
+int redo_action_stack[] = {F_NULL, F_NULL, F_NULL, F_NULL, F_NULL};
 
 /*************** LOCAL *****************/
 
 static int	last_object;  // KAB may need to change this to an int * for multiple objects
 static F_pos	last_position, new_position;  // KAB may need to change this to an F_pos * for multiple positions
-static int	last_arcpointnum
+static int	last_arcpointnum;
 static F_point *last_prev_point, *last_selected_point, *last_next_point;
 static F_sfactor  *last_selected_sfactor;
 static F_linkinfo *last_links;
@@ -227,7 +227,7 @@ void undo_addpoint(void)
 void undo_deletepoint(void)
 {
     // last_action = F_NULL;	/* to avoid doing a clean-up during adding */ // KAB not sure if I need to modify this
-		pop_undo_stack_action(); // KAB added to pop last action
+		// pop_undo_stack_action(); // KAB added to pop last action
 
     if (last_object == O_POLYLINE) {
 	linepoint_adding(saved_objects.lines, last_prev_point,
@@ -251,7 +251,7 @@ void undo_break(void)
     remove_compound_depth(saved_objects.compounds);
     list_add_compound(&objects.compounds, saved_objects.compounds);
     // last_action = F_GLUE;  // KAB
-		pop_undo_stack_action();
+		// pop_undo_stack_action();
     toggle_markers_in_compound(saved_objects.compounds);
     mask_toggle_compoundmarker(saved_objects.compounds);
 }
@@ -264,7 +264,7 @@ void undo_glue(void)
     /* add the depths from this compound because they weren't added by the append_objects() */
     add_compound_depth(saved_objects.compounds);
     // last_action = F_BREAK; // KAB
-		pop_undo_stack_action();
+		// pop_undo_stack_action();
     mask_toggle_compoundmarker(saved_objects.compounds);
     toggle_markers_in_compound(saved_objects.compounds);
     if (cur_mode != F_GLUE && cur_mode != F_BREAK)
@@ -305,7 +305,7 @@ void undo_add_arrowhead(void)
 	return;
     }
     // last_action = F_DELETE_ARROW_HEAD; // KAB
-		pop_undo_stack_action();
+		// pop_undo_stack_action();
 }
 
 void undo_delete_arrowhead(void)
@@ -336,7 +336,7 @@ void undo_delete_arrowhead(void)
 	return;
     }
     // last_action = F_ADD_ARROW_HEAD; // KAB
-		pop_undo_stack_action();
+		// pop_undo_stack_action();
 }
 
 /*
@@ -355,7 +355,7 @@ void undo_change(void)
     F_text	    swp_t;
 
     // last_action = F_NULL;	/* to avoid a clean-up during "unchange" */ // KAB
-		pop_undo_stack_action();
+		// pop_undo_stack_action();
     switch (last_object) {
       case O_POLYLINE:
 	new_l = saved_objects.lines;		/* the original */
@@ -534,7 +534,7 @@ void undo_add(void)
     }
 
     // last_action = F_DELETE;
-		pop_undo_stack_action();
+		// pop_undo_stack_action();
 }
 
 void undo_delete(void)
@@ -590,7 +590,7 @@ void undo_delete(void)
 	redisplay_zoomed_region(xmin, ymin, xmax, ymax);
     }
     // last_action = F_ADD; //KAB
-		pop_undo_stack_action();
+		// pop_undo_stack_action();
 }
 
 void undo_move(void)
@@ -678,7 +678,7 @@ void undo_load(void)
     /* redisply that figure */
     redisplay_canvas();
     // last_action = F_LOAD; //KAB
-		pop_undo_stack_action();
+		// pop_undo_stack_action();
 }
 
 void undo_scale(void)
@@ -786,7 +786,7 @@ void clean_up(void)
 	    free((char *) saved_objects.comments);
 	    break;
 	}
-} else if ([0]]==F_DELETE || last_action[0]==F_JOIN || last_action[0]==F_SPLIT) {
+} else if (last_action[0] == F_DELETE || last_action[0] == F_JOIN || last_action[0] == F_SPLIT) {
 	switch (last_object) {
 	  case O_ARC:
 	    free_arc(&saved_objects.arcs);
@@ -870,7 +870,7 @@ void clean_up(void)
 	last_selected_point = NULL;
     }
     // last_action = F_NULL; //KAB
-		pop_undo_stack_action();
+		// pop_undo_stack_action();
 }
 
 void set_latestarc(F_arc *arc)
@@ -948,12 +948,14 @@ void set_newposition(int x, int y)
 void set_action(int action) // KAB replaced by push and pop functions
 {
     // last_action = action;
+		printf("set_action\n");
 		push_undo_stack_action(action);  // add recent action to stack
 }
 
 void set_action_object(int action, int object)
 {
     // last_action = action;
+		printf("set_action_object\n");
 		push_undo_stack_action(action);
     last_object = object;
 }
@@ -978,9 +980,15 @@ void set_last_arrows(F_arrow *forward, F_arrow *backward)
 
 ////////////////////// Functions Added by Kyle Bielby //////////////////////////
 // pop the last action from the undo action stack
-void pop_undo_stack_action() {
-	for(int i = 0; i < 5; i ++) {
-    if(i != 4){
+void pop_undo_stack_action()
+{
+	printf("popping undo\n");
+	printf("Displaying undo aciton stack:\n");
+	for(int i = 0; i < 5; i ++)
+	{
+		printf("last_action[%d] = %d\n", i, last_action[i]);
+    if(i != 4)
+		{
 			last_action[i] = last_action[i + 1];  // move stack actions up by index 1
 		}
 		else if(i == 4) {
@@ -991,9 +999,12 @@ void pop_undo_stack_action() {
 
 // push the given action onto the undo action stack
 void push_undo_stack_action(int action) {
-	for(int index = 0, index < 5; i++) {
+	printf("pushing undo\n");
+	printf("Displaying undo aciton stack:\n");
+	for(int index = 0; index < 5; index++) {
+		printf("last_action[%d] = %d\n", index, last_action[index]);
 		if (index != 4) {
-			last_action[index + 1] = last_action[index]
+			last_action[index + 1] = last_action[index];
 			if (index == 0) {
 				last_action[0] = action;
 			}
@@ -1003,7 +1014,12 @@ void push_undo_stack_action(int action) {
 
 // pop the last action from the redo action stack
 void pop_redo_stack_action() {
-	for(int i = 0; i < 5; i ++) {
+	printf("popping redo\n");
+	printf("Displaying redo aciton stack:\n");
+	for(int i = 0; i < 5; i++){
+		printf("redo_action_stack\n");
+	}
+	for(int i = 0; i < 5; i++) {
     if(i != 4){
 			redo_action_stack[i] = redo_action_stack[i + 1];  // move stack actions up by index 1
 		}
@@ -1015,9 +1031,9 @@ void pop_redo_stack_action() {
 
 // push the given action onto the undo action stack
 void push_redo_stack_action(int action) {
-	for(int index = 0, index < 5; i++) {
+	for(int index = 0; index < 5; index++) {
 		if (index != 4) {
-			redo_action_stack[index + 1] = redo_action_stack[index]
+			redo_action_stack[index + 1] = redo_action_stack[index];
 			if (index == 0) {
 				redo_action_stack[0] = action;
 			}
