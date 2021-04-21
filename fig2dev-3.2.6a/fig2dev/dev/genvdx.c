@@ -23,7 +23,7 @@ static void vdx_dash(int, double);
 #define PREAMBLE "<?xml version=\"1.0\" encoding=\"utf-8\" standalone=\"no\"?>"
 
 
-// Not sure what this is
+// Left over from gensvg.c
 static unsigned int symbolchar[256]=
 {0,0,0,0,0,0,0,0,0,0,
 0,0,0,0,0,0,0,0,0,0,
@@ -51,7 +51,7 @@ static unsigned int symbolchar[256]=
 0xF8F5,0x2321,0xF8F6,0xF8F7,0xF8F8,0xF8F9,0xF8FA,0xF8FB,0xF8FC,0xF8FD,0xF8FE,0
 };
 
-// Not sure what this is
+// Left over from gensvg.c
 static unsigned int dingbatchar[256]=
 {0,0,0,0,0,0,0,0,0,0,
 0,0,0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0,0,0, 0,0,0x0020,
@@ -83,24 +83,7 @@ static int	tileno = -1;	/* number of current tile */
 static int	pathno = -1;	/* number of current path */
 static int	clipno = -1;	/* number of current clip path */
 
-static void
-put_capstyle(int c)
-{
-	// if (c == 1)
-	    // fputs(" stroke-linecap=\"round\"", tfp);
-	// else if (c == 2)
-	    // fputs(" stroke-linecap=\"square\"", tfp);
-}
-
-static void
-put_joinstyle(int j)
-{
-	// if (j == 1)
-	    // fputs(" stroke-linejoin=\"round\"", tfp);
-	// else if (j == 2)
-	    // fputs(" stroke-linejoin=\"bevel\"", tfp);
-}
-
+// Left over from gensvg.c
 static unsigned int
 rgbColorVal(int colorIndex)
 {				/* taken from genptk.c */
@@ -125,6 +108,7 @@ rgbColorVal(int colorIndex)
     return rgb;
 }
 
+// Left over from gensvg.c
 static unsigned int
 rgbFillVal(int colorIndex, int area_fill)
 {
@@ -166,12 +150,14 @@ rgbFillVal(int colorIndex, int area_fill)
     return rgb;
 }
 
+// Left over from gensvg.c
 static double
 degrees(double angle)
 {
    return -angle / M_PI * 180.0;
 }
 
+// Left over from gensvg.c
 static double
 linewidth_adj(int linewidth)
 {
@@ -197,7 +183,6 @@ genvdx_option(char opt, char *optarg)
     }
 }
 
-// Change function name to genvdx_start
 void
 genvdx_start(F_compound *objects)
 {
@@ -278,7 +263,7 @@ genvdx_end(void)
     return 0;
 }
 
-
+// Left over from gensvg.c
 #define	INIT	-9	/* Change this, if pen_color may be negative. */
 #define	CLIP	-8
 
@@ -293,7 +278,6 @@ genvdx_end(void)
 	if (fill_style == UNFILLED)				\
 		
 
-// Used for fill
 void
 continue_paint_vdx(int fill_style, int pen_color, int fill_color)
 {
@@ -309,32 +293,25 @@ continue_paint_vdx(int fill_style, int pen_color, int fill_color)
     }
 }
 
-// No idea what this does
 void
 continue_paint_w_clip_vdx(int fill_style, int pen_color, int fill_color)
 {
     if (fill_style > UNFILLED) {
-	// fprintf(tfp, " id=\"p%d\"/>\n", ++pathno);
-	if (fill_style > NUMFILLS) {
-	    generate_tile(fill_style - NUMFILLS, pen_color);
-	}
-	fprintf(tfp, "<use xlink:href=\"#p%d\" ", pathno);
-	if (fill_style > NUMFILLS) {
-		fputs("\t\t\t\t<Fill>\n", tfp);
-		fprintf(tfp, "\t\t\t\t\t<FillColor>#%6.6x</FillColor>\n", rgbColorVal(fill_color));
-		fputs("\t\t\t\t</Fill>\n", tfp);
-	    fprintf(tfp, "<use xlink:href=\"#p%d\" fill=\"url(#tile%d)\"/> ",
-		    pathno, tileno);
-	} else {
-		fputs("\t\t\t\t<Fill>\n", tfp);
-		fprintf(tfp, "\t\t\t\t\t<FillColor>#%6.6x</FillColor>\n", rgbFillVal(fill_color, fill_style));
-		fputs("\t\t\t\t</Fill>\n", tfp);
-	}
-	fprintf(tfp, "<use xlink:href=\"#p%d\"", pathno);
+		if (fill_style > NUMFILLS) {
+			generate_tile(fill_style - NUMFILLS, pen_color);
+		}
+		if (fill_style > NUMFILLS) {
+			fputs("\t\t\t\t<Fill>\n", tfp);
+			fprintf(tfp, "\t\t\t\t\t<FillColor>#%6.6x</FillColor>\n", rgbColorVal(fill_color));
+			fputs("\t\t\t\t</Fill>\n", tfp);
+		} else {
+			fputs("\t\t\t\t<Fill>\n", tfp);
+			fprintf(tfp, "\t\t\t\t\t<FillColor>#%6.6x</FillColor>\n", rgbFillVal(fill_color, fill_style));
+			fputs("\t\t\t\t</Fill>\n", tfp);
+		}
     }
 }
 
-// For lines
 void
 genvdx_line(F_line *l)
 {
@@ -347,9 +324,9 @@ genvdx_line(F_line *l)
 	if (l->type == T_PIC_BOX ) {
 		// Shape
 		fputs("\t\t\t<Shape ", tfp);
-		fputs("ID='1' ", tfp); // We don't know what ID is yet
 		fputs("Name='Image' Type='Shape'>\n", tfp);
 		fprintf(tfp, "\t\t\t\t<ImageLink>xlink:href=\"file://%s\"</ImageLink>\n", l->pic->file);
+		// Left over from gensvg.c
 		p = l->points;
 		px = p->x;
 		py = p->y;
@@ -407,8 +384,6 @@ genvdx_line(F_line *l)
 
 	// Shape
 	fputs("\t\t\t<Shape ", tfp);
-	fputs("ID='1' ", tfp); // We don't know what ID is yet
-
 	if (l->type == T_POLYGON) {
 		chars = fputs("Name='Polygon' Type='Shape'>\n", tfp);
 		// XForm
@@ -421,6 +396,7 @@ genvdx_line(F_line *l)
 		fputs("\t\t\t\t</XForm>\n", tfp);
 	} 
 	else {	/* T_BOX || T_ARC_BOX */
+		// Left over from gensvg.c
 	    px = l->points->next->next->x;
 	    py = l->points->next->next->y;
 	    width = l->points->x - px;
@@ -461,8 +437,6 @@ genvdx_line(F_line *l)
 	if (l->thickness) {
 		fprintf(tfp, "\t\t\t\t\t<LineColor>#%6.6x</LineColor>\n", rgbColorVal(l->pen_color));
 		fprintf(tfp, "\t\t\t\t\t<LineWeight>%dpx</LineWeight>\n", (int) ceil(linewidth_adj(l->thickness)));
-		put_joinstyle(l->join_style);
-		put_capstyle(l->cap_style);
 		if (l->style > SOLID_LINE)
 			vdx_dash(l->style, l->style_val);
 	}
@@ -474,7 +448,7 @@ genvdx_line(F_line *l)
 
     if (l->type == T_POLYLINE) {
 	bool	has_clip = false;
-
+	// Left over from gensvg.c
 	if (l->for_arrow || l->back_arrow) {
 	    has_clip = vdx_arrows(l->thickness, l->for_arrow, l->back_arrow,
 			    &(l->last[1]), l->last, (F_pos *)l->points->next,
@@ -486,7 +460,7 @@ genvdx_line(F_line *l)
 		return;
 	    }
 	}
-
+	// Left over from gensvg.c
 	if (has_clip) {
 	    INIT_PAINT_W_CLIP(l->fill_style, l->thickness, l->for_arrow,
 		    l->back_arrow, &(l->last[1]), l->last,
@@ -497,7 +471,6 @@ genvdx_line(F_line *l)
 
 	// Shape
 	fputs("\t\t\t<Shape ", tfp);
-	fputs("ID='1' ", tfp); // We don't know what ID is yet
 	fputs("Name='PolyLine' Type='Shape'>\n", tfp);
 	// XForm
 	fputs("\t\t\t\t<XForm>\n", tfp);
@@ -519,8 +492,6 @@ genvdx_line(F_line *l)
 	if (l->thickness) {
 		fprintf(tfp, "\t\t\t\t\t<LineColor>#%6.6x</LineColor>\n", rgbColorVal(l->pen_color));
 		fprintf(tfp, "\t\t\t\t\t<LineWeight>%dpx</LineWeight>\n", (int) ceil(linewidth_adj(l->thickness)));
-	    put_joinstyle(l->join_style);
-	    put_capstyle(l->cap_style);
 	    if (l->style > SOLID_LINE)
 		vdx_dash(l->style, l->style_val);
 	}
@@ -541,7 +512,7 @@ genvdx_spline( /* not used by fig2dev */
     F_point *p;
 	
 	// Shape
-	fputs("\t\t\t<Shape ID='1' Name='Spline' Type='Shape'>\n", tfp);
+	fputs("\t\t\t<Shape Name='Spline' Type='Shape'>\n", tfp);
 	// XForm
 	fputs("\t\t\t\t<XForm>\n", tfp);
 	fprintf(tfp, "\t\t\t\t\t<PinX>%d</PinX>\n", s->points->x); // x coord
@@ -569,8 +540,8 @@ genvdx_arc(F_arc *a)
 	return;
 
 	// Shape
-	fputs("\t\t\t<Shape ID='1' Name='Arc' Type='Shape'>\n", tfp);
-
+	fputs("\t\t\t<Shape Name='Arc' Type='Shape'>\n", tfp);
+	// Left over from gensvg.c
     if (a->for_arrow || a->back_arrow) {
 	if (a->for_arrow) {
 	    forw2.x = a->point[2].x;
@@ -629,7 +600,7 @@ genvdx_arc(F_arc *a)
 
 
     /* paint the object */
-
+	// Left over from gensvg.c
     if (a->type == T_PIE_WEDGE_ARC)
 		fprintf(tfp, " %ld,%ld L",
 			lround(a->center.x), lround(a->center.y));
@@ -647,7 +618,6 @@ genvdx_arc(F_arc *a)
     if (a->thickness) {
 	fprintf(tfp, "\t\t\t\t\t<LineColor>#%6.6x</LineColor>\n", rgbColorVal(a->pen_color));
 	fprintf(tfp, "\t\t\t\t\t<LineWeight>%dpx</LineWeight>\n", (int) ceil(linewidth_adj(a->thickness)));
-	put_capstyle(a->cap_style);
 	if (a->style > SOLID_LINE)
 	    vdx_dash(a->style, a->style_val);
     }
@@ -670,7 +640,6 @@ genvdx_ellipse(F_ellipse *e)
 		int r = e->radiuses.x ;
 		int diam = r*2;
 		fputs("\t\t\t<Shape ", tfp);
-		fputs("ID='1' ", tfp); // We don't know what ID is yet
 		if(e->type == T_CIRCLE_BY_RAD) {
 			fputs("Name='Circle by Radius' ", tfp);
 		}
@@ -694,7 +663,6 @@ genvdx_ellipse(F_ellipse *e)
 		int rx = e->radiuses.x ;
 		int ry = e->radiuses.y ;
 		fputs("\t\t\t<Shape ", tfp);
-		fputs("ID='1' ", tfp); // We don't know what ID is yet
 		if(e->type == T_ELLIPSE_BY_RAD) {
 			fputs("Name='Ellipse by Radius' ", tfp);
 		}
@@ -746,9 +714,10 @@ genvdx_text(F_text *t)
     int dy = 0;
 
 	// Shape
-	fputs("\t\t\t<Shape ID='1' Name='Text' Type='Shape'>\n", tfp);
+	fputs("\t\t\t<Shape Name='Text' Type='Shape'>\n", tfp);
 	fputs("\t\t\t\t<Text>", tfp);
 
+	// Left over from gensvg.c
     if (t->font == 32) {
 	for (cp = (unsigned char *) t->cstring; *cp; cp++) {
 		ch=*cp;
@@ -908,7 +877,7 @@ vdx_arrows(int line_thickness, F_arrow *for_arrow, F_arrow *back_arrow,
 	    return false;
     }
 
-	fputs("\t\t\t<Shape ID='1' Name='ArrowHead' Type='Shape'>\n", tfp);
+	fputs("\t\t\t<Shape Name='ArrowHead' Type='Shape'>\n", tfp);
     if (for_arrow) {
 	fputs("\t\t\t\t<Arrow>", tfp);
 	arrow_path(for_arrow, forw2, pen_color, fnpoints, fpoints,
@@ -936,78 +905,6 @@ vdx_arrows(int line_thickness, F_arrow *for_arrow, F_arrow *back_arrow,
 static void
 generate_tile(int number, int colorIndex)
 {
-    static const struct pattern {
-	char*	size;
-	char*	code;
-    }	pattern[NUMPATTERNS] = {
-	/* 0	30 degrees left diagonal */
-	{"width=\"134\" height=\"67\">",
-	 "\"M -7,30 73,70 M 61,-3 141,37\""},
-	/* 1 	30 degrees right diagonal */
-	{"width=\"134\" height=\"67\">",
-	 /* M 0 33.5 67 0 M 67 67 134 33.5 */
-	 "\"M -7,37 73,-3 M 61,70 141,30\""},
-	 /* 2	30 degrees crosshatch */
-	{"width=\"134\" height=\"67\">",
-	 "\"M -7,30 73,70 M 61,-3 141,37 M -7,37 73,-3 M 61,70 141,30\""},
-	 /* 3	45 degrees left diagonal */
-	{"width=\"134\" height=\"134\">",
-	 "\"M -4,63 71,138 M 63,-4 138,71\""},
-	 /* 4	45 degrees right diagonal */
-	{"width=\"134\" height=\"134\">",
-	 "\"M -4,71 71,-4 M 63,138 138,63\""},
-	 /* 5	45 degrees crosshatch */
-	{"width=\"134\" height=\"134\">",
-	 "\"M-4,63 71,138 M63,-4 138,71 M-4,71 71,-4 M63,138 138,63\""},
-	 /* 6	horizontal bricks */
-	{"width=\"268\" height=\"268\">",
-	 "\"M-1,67 H269 M-1,201 H269 M67,-1 V67 M67,201 V269 M201,67 V201\""},
-	 /* 7	vertical bricks */
-	{"width=\"268\" height=\"268\">",
-	 "\"M67,-1 V269 M201,-1 V269 M-1,67 H67 M201,67 H269 M67,201 H201\""},
-	 /* 8	horizontal lines */
-	{"width=\"268\" height=\"67\">",
-	 "\"M -1,30 H 269\""},
-	 /* 9	vertical lines */
-	{"width=\"67\" height=\"268\">",
-	 "\"M 30,-1 V 269\""},
-	 /* 10	crosshatch */
-	{"width=\"67\" height=\"67\">",
-	 "\"M -1,30 H 68 M 30,-1 V 68\""},
-	 /* 11	left-pointing shingles */
-	{"width=\"402\" height=\"402\">",
-	 "\"M-1,30 H403 M-1,164 H403 M-1,298 H403 M238,30 l-67,134 M372,164 l-67,134 M104,298 l-60,120 M37,30 l20,-40\""},
-	 /* 12	right-pointing shingles */
-	{"width=\"402\" height=\"402\">",
-	 "\"M-1,30 H403 M-1,164 H403 M-1,298 H403 M164,30 l67,134 M30,164 l67,134 M298,298 l60,120 M365,30 l-20,-40\""},
-	 /* 13  vertical left-pointing shingles */
-	{"width=\"402\" height=\"402\">",
-	 "\"M30,-1 V403 M164,-1 V403 M298,-1 V403 M30,164 l134,67 M164,30 l134,67 M298,298 l120,60 M30,365 l-40,-20\""},
-	 /* 14	vertical right-pointing shingles */
-	{"width=\"402\" height=\"402\">",
-	 "\"M30,-1 V403 M164,-1 V403 M298,-1 V403 M30,238 l134,-67 M164,372 l134,-67 M298,104 l120,-60 M30,37 l-40,20\""},
-	 /* 15	fish scales */
-	{"width=\"268\" height=\"140\">",
-	 "\"M-104,-30 a167.5,167.5 0 0,0 268,0 a167.5,167.5 0 0,0 134,67 m0,3 a167.5,167.5 0 0,1 -268,0 a167.5,167.5 0 0,1 -134,67 m134,70 a167.5,167.5 0 0,0 134,-67 a167.5,167.5 0 0,0 134,67\""},
-	 /* 16	small fish scales */
-	{"width=\"134\" height=\"134\">",
-	 "\"M164,-30 a67,67 0 0,1 -134,0 a67,67 0 0,1 -67,67 a67,67 0 0,0 134,0 a67,67 0 0,0 67,67 a67,67 0 0,1 -134,0 a67,67 0 0,1 -67,67\""},
-	 /* 17	circles */
-	{"width=\"268\" height=\"268\">",
-	 "\"M0,134 a134,134 0 0,0 134,-134 a134,134 0 0,0 134,134 a134,134 0 0,0 -134,134 a134,134 0 0,0 -134,-134\""},
-	 /* 18	hexagons */
-	{"width=\"402\" height=\"232\">",
-	 "\"m97,-86 -67,116 67,116 -67,116 M231,-86 l67,116 l-67,116 l67,116 M-1,30 h31 m268,0 h105 M97,146 h134\""},
-	 /* 19	octagons */
-	{"width=\"280\" height=\"280\">",
-	 "\"m-1,140 59,0 82,-82 82,82 -82,82 -82,-82 m82,82 v59 m0,-282 v59 m82,82 h59\""},
-	 /* 20	horizontal sawtooth */
-	{"width=\"134\" height=\"134\">",
-	 "\"m-4,63 67,67 67,-67 20,20\""},
-	 /* 21	vertical sawtooth */
-	{"width=\"134\" height=\"134\">",
-	 "\"m63,-4 67,67 -67,67 20,20\""},
-    };
 	// Pattern
 	fputs("\t\t\t\t\t<Pattern>\n", tfp);
 	fprintf(tfp, "\t\t\t\t\t\t<PatternID>%d</PatternID>\n", ++tileno);
@@ -1019,6 +916,7 @@ static void
 vdx_dash(int style, double val)
 {
 	fputs("\t\t\t\t\t<DashArray>", tfp);
+	// Left over from gensvg.c
 	switch(style) {
 	case 1:
 	default:
