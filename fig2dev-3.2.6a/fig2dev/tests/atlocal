@@ -1,8 +1,0 @@
-# fig2dev/tests/atlocal.  Generated from atlocal.in by configure.
-
-if test x"/home/butlerzc/ee368-xfig-modifications/fig2dev-3.2.6a" == x"/home/butlerzc/ee368-xfig-modifications/fig2dev-3.2.6a"; then
-  PATH=/home/butlerzc/ee368-xfig-modifications/fig2dev-3.2.6a/fig2dev:$PATH
-else
-  PATH=/home/butlerzc/ee368-xfig-modifications/fig2dev-3.2.6a/fig2dev:/home/butlerzc/ee368-xfig-modifications/fig2dev-3.2.6a/fig2dev:$PATH
-fi
-FGREP='/bin/grep -F'
