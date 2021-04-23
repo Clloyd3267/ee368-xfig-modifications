@@ -115,55 +115,74 @@ void swap_newp_lastp (void);
 void
 undo(void)
 {
+	printf("undo function called\n");
+	printf("popping action from undo stack\n");
+	pop_undo_stack_action();
+
     /* turn off Compose key LED */
     setCompLED(0);
 
     // switch (last_action) {
     switch (last_action[0]) {  // check action contained at the top of the stack
       case F_ADD:
+			printf("F_Add\n");
 	undo_add();
 	break;
       case F_DELETE:
+			printf("F_DELETE\n");
 	undo_delete();
 	break;
       case F_MOVE:
+			printf("F_MOVE\n");
 	undo_move();
 	break;
       case F_EDIT:
+			printf("F_EDIT\n");
 	undo_change();
 	break;
       case F_GLUE:
+			printf("F_GLUE\n");
 	undo_glue();
 	break;
       case F_BREAK:
+			printf("F_BREAK\n");
 	undo_break();
 	break;
       case F_LOAD:
+			printf("F_LOAD\n");
 	undo_load();
 	break;
       case F_SCALE:
+			printf("F_SCALE\n");
 	undo_scale();
 	break;
       case F_ADD_POINT:
+			printf("F_ADD_POINT\n");
 	undo_addpoint();
 	break;
       case F_DELETE_POINT:
+			printf("F_DELETE_POINT\n");
 	undo_deletepoint();
 	break;
       case F_ADD_ARROW_HEAD:
+			printf("F_ADD_ARROW_HEAD\n");
 	undo_add_arrowhead();
 	break;
       case F_DELETE_ARROW_HEAD:
+			printf("F_DELETE_ARROW_HEAD\n");
 	undo_delete_arrowhead();
 	break;
       case F_CONVERT:
+			printf("F_CONVERT\n");
 	undo_convert();
 	break;
       case F_OPEN_CLOSE:
+			printf("F_OPEN_CLOSE\n");
 	undo_open_close();
 	break;
       case F_JOIN:
       case F_SPLIT:
+			printf("JOIN SPLIT\n");
 	undo_join_split();
 	break;
     default:
@@ -192,6 +211,7 @@ void undo_join_split(void)
 	else if (new_l->next && !old_l->next){ /* split undo */
           remove_depth(O_POLYLINE, new_l->next->depth);
         }
+	printf("caling set action object undo_join_split\n");
 	set_action_object(F_JOIN, O_POLYLINE);
 	redisplay_lines(new_l, old_l);
     } else {
@@ -204,11 +224,14 @@ void undo_join_split(void)
 	/* this assumes that the object are at the end of the objects list */
 	/* correct the depth counts if necessary */
 	if (!new_s->next && old_s->next){ /* join undo */
+		printf("adding depth\n");
           add_depth(O_SPLINE, old_s->next->depth);
         }
 	else if (new_s->next && !old_s->next){ /* split undo */
+		printf("removing depth\n");
           remove_depth(O_SPLINE, new_s->next->depth);
         }
+	printf("udno_join_split next isntance\n");
 	set_action_object(F_JOIN, O_SPLINE);
 	redisplay_splines(new_s, old_s);
     }
@@ -371,6 +394,7 @@ void undo_change(void)
 	swp_l.next = old_l->next;
 	old_l->next = new_l->next;
 	new_l->next = swp_l.next;
+	printf("undo_change \n");
 	set_action_object(F_EDIT, O_POLYLINE);
 	redisplay_lines(new_l, old_l);
 	break;
@@ -388,6 +412,7 @@ void undo_change(void)
 	swp_e.next = old_e->next;
 	old_e->next = new_e->next;
 	new_e->next = swp_e.next;
+	printf("undo_change edit ellipse\n");
 	set_action_object(F_EDIT, O_ELLIPSE);
 	redisplay_ellipses(new_e, old_e);
 	break;
@@ -405,6 +430,7 @@ void undo_change(void)
 	swp_t.next = old_t->next;
 	old_t->next = new_t->next;
 	new_t->next = swp_t.next;
+	printf("undo_change edit text\n");
 	set_action_object(F_EDIT, O_TXT);
 	redisplay_texts(new_t, old_t);
 	break;
@@ -412,6 +438,7 @@ void undo_change(void)
 	new_s = saved_objects.splines;
 	old_s = saved_objects.splines->next;
 	/* account for depths */
+	printf("removing depths\n");
 	remove_depth(O_SPLINE, old_s->depth);
 	add_depth(O_SPLINE, new_s->depth);
 	/* swap old with new */
@@ -422,6 +449,7 @@ void undo_change(void)
 	swp_s.next = old_s->next;
 	old_s->next = new_s->next;
 	new_s->next = swp_s.next;
+	printf("undo_chagne edit spline\n");
 	set_action_object(F_EDIT, O_SPLINE);
 	redisplay_splines(new_s, old_s);
 	break;
@@ -439,6 +467,7 @@ void undo_change(void)
 	swp_a.next = old_a->next;
 	old_a->next = new_a->next;
 	new_a->next = swp_a.next;
+	printf("undo_chagne edit arc\n");
 	set_action_object(F_EDIT, O_ARC);
 	redisplay_arcs(new_a, old_a);
 	break;
@@ -456,6 +485,7 @@ void undo_change(void)
 	swp_c.next = old_c->next;
 	old_c->next = new_c->next;
 	new_c->next = swp_c.next;
+	printf("undo_change edit compound\n");
 	set_action_object(F_EDIT, O_COMPOUND);
 	redisplay_compounds(new_c, old_c);
 	break;
@@ -464,6 +494,7 @@ void undo_change(void)
 	swp_comm = objects.comments;
 	objects.comments = saved_objects.comments;
 	saved_objects.comments = swp_comm;
+	printf("undo_change edit figure\n");
 	set_action_object(F_EDIT, O_FIGURE);
 	break;
       case O_ALL_OBJECT:
@@ -475,6 +506,7 @@ void undo_change(void)
 	/* account for depths */
 	remove_compound_depth(old_c);
 	add_compound_depth(new_c);
+	printf("undo_change edit all object\n");
 	set_action_object(F_EDIT, O_ALL_OBJECT);
 	set_modifiedflag();
 	redisplay_zoomed_region(0, 0, BACKX(CANVAS_WD), BACKY(CANVAS_HT));
@@ -498,11 +530,13 @@ void undo_change(void)
 
 void undo_add(void)
 {
+	printf("Undoing add\n");
     int		    xmin, ymin, xmax, ymax;
     char	    ctemp[PATH_MAX];
 
     switch (last_object) {
       case O_POLYLINE:
+			printf("POLYLINE\n");
 	list_delete_line(&objects.lines, saved_objects.lines);
 	redisplay_line(saved_objects.lines);
 	break;
@@ -515,6 +549,7 @@ void undo_add(void)
 	redisplay_text(saved_objects.texts);
 	break;
       case O_SPLINE:
+			printf("SPLINE\n");
 	list_delete_spline(&objects.splines, saved_objects.splines);
 	redisplay_spline(saved_objects.splines);
 	break;
@@ -801,6 +836,7 @@ void clean_up(void)
 	    free_line(&saved_objects.lines);
 	    break;
 	  case O_SPLINE:
+		  printf("Freeing Spline\n");
 	    free_spline(&saved_objects.splines);
 	    break;
 	  case O_TXT:
@@ -1001,13 +1037,13 @@ void pop_undo_stack_action()
 void push_undo_stack_action(int action) {
 	printf("pushing undo\n");
 	printf("Displaying undo aciton stack:\n");
-	for(int index = 0; index < 5; index++) {
+	for(int index = 4; index >= 0; index--) {
 		printf("last_action[%d] = %d\n", index, last_action[index]);
-		if (index != 4) {
-			last_action[index + 1] = last_action[index];
-			if (index == 0) {
-				last_action[0] = action;
-			}
+		if (index == 0) {
+			last_action[0] = action;
+		}
+		else{
+			last_action[index] = last_action[index - 1];
 		}
   }
 }
