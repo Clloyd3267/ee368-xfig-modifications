@@ -283,7 +283,7 @@ void undo_glue(void)
 {
     list_delete_compound(&objects.compounds, saved_objects.compounds);
     tail(&objects, &object_tails);
-    append_objects(&objects, saved_objects.compounds, &object_tails);
+    append_objects(&objects, saved_objects.compounds, &object_tails); // KAB
     /* add the depths from this compound because they weren't added by the append_objects() */
     add_compound_depth(saved_objects.compounds);
     // last_action = F_BREAK; // KAB
@@ -550,6 +550,7 @@ void undo_add(void)
 	break;
       case O_SPLINE:
 			printf("SPLINE\n");
+			printf("saved_objects.splines: %d\n", &saved_objects.splines);
 	list_delete_spline(&objects.splines, saved_objects.splines);
 	redisplay_spline(saved_objects.splines);
 	break;
@@ -810,6 +811,7 @@ void clean_up(void)
 	    free_line(&saved_objects.lines);
 	    break;
 	  case O_SPLINE:
+		  printf("clean up spline\n");
 	    saved_objects.splines->next = NULL;
 	    free_spline(&saved_objects.splines);
 	    break;

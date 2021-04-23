@@ -92,6 +92,7 @@ list_delete_ellipse(F_ellipse **ellipse_list, F_ellipse *ellipse)
 void
 list_delete_line(F_line **line_list, F_line *line)
 {
+  printf("deleting splines\n");
     F_line	   *q, *r;
 
     if (*line_list == NULL)
@@ -116,6 +117,7 @@ list_delete_line(F_line **line_list, F_line *line)
 void
 list_delete_spline(F_spline **spline_list, F_spline *spline)
 {
+  printf("Deleting Spline %d\n", spline);
     F_spline	   *q, *r;
 
     if (*spline_list == NULL)
@@ -123,18 +125,20 @@ list_delete_spline(F_spline **spline_list, F_spline *spline)
     if (spline == NULL)
 	return;
 
+  printf("spline was not null\n");
+
     if (spline_list == &objects.splines)
-	remove_depth(O_SPLINE, spline->depth);
-    for (q = r = *spline_list; r != NULL; q = r, r = r->next) {
-	if (r == spline) {
-	    if (r == *spline_list)
-		*spline_list = (*spline_list)->next;
-	    else
-		q->next = r->next;
-	    break;
-	}
-    }
-    spline->next = NULL;
+	     remove_depth(O_SPLINE, spline->depth);
+       for (q = r = *spline_list; r != NULL; q = r, r = r->next) {
+	         if (r == spline) {
+	            if (r == *spline_list)
+		            *spline_list = (*spline_list)->next;
+	            else
+		            q->next = r->next;
+	            break;
+	          }
+       }
+        spline->next = NULL;
 }
 
 void
