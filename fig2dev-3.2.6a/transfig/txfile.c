@@ -58,6 +58,7 @@ texfile(FILE *tx, char *in, argument *arg_list)
 	  case ppm:
 	  case ptk:
 	  case sld:
+	  case vdx:
 	  case textyl:
 	  case tiff:
 	  case tk:
