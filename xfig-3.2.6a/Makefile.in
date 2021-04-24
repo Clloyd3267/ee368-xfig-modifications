@@ -14,7 +14,7 @@
 
 @SET_MAKE@
 
-# This file is part of fig2dev - Translate Fig code to various devices.
+# This file is part of FIG - Facility for Interactive Generation of figures
 #
 # Copyright (c) 2016 Thomas Loimer <thomas.loimer@tuwien.ac.at>
 #
@@ -22,8 +22,6 @@
 # are permitted in any medium without royalty provided the copyright
 # notice and this notice are preserved. This file is offered as-is,
 # without any warranty.
-
-
 
 VPATH = @srcdir@
 am__is_gnu_make = { \
@@ -97,33 +95,50 @@ POST_INSTALL = :
 NORMAL_UNINSTALL = :
 PRE_UNINSTALL = :
 POST_UNINSTALL = :
-@ENABLE_I18N_TRUE@am__append_1 = i18n
-bin_PROGRAMS = fig2dev$(EXEEXT)
-subdir = fig2dev
+@XFIG_LIBRARIES_TRUE@am__append_1 = $(xfig_librariesdir)
+subdir = .
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/m4/tl_check_header_path.m4 \
 	$(top_srcdir)/m4/tl_search_libs_path.m4 \
 	$(top_srcdir)/version.m4 $(top_srcdir)/configure.ac
 am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
 	$(ACLOCAL_M4)
-DIST_COMMON = $(srcdir)/Makefile.am $(dist_bin_SCRIPTS) \
-	$(dist_pkgdata_DATA) $(am__DIST_COMMON)
+DIST_COMMON = $(srcdir)/Makefile.am $(top_srcdir)/configure \
+	$(am__configure_deps) $(dist_applications_DATA) \
+	$(dist_compkeydb_DATA) $(dist_icon_DATA) $(am__DIST_COMMON)
+am__CONFIG_DISTCLEAN_FILES = config.status config.cache config.log \
+ configure.lineno config.status.lineno
 mkinstalldirs = $(install_sh) -d
-CONFIG_HEADER = $(top_builddir)/config.h
-CONFIG_CLEAN_FILES =
+CONFIG_HEADER = config.h
+CONFIG_CLEAN_FILES = app-defaults/Fig
 CONFIG_CLEAN_VPATH_FILES =
-am__installdirs = "$(DESTDIR)$(bindir)" "$(DESTDIR)$(bindir)" \
-	"$(DESTDIR)$(pkgdatadir)"
-PROGRAMS = $(bin_PROGRAMS)
-am_fig2dev_OBJECTS = arrow.$(OBJEXT) bound.$(OBJEXT) colors.$(OBJEXT) \
-	creationdate.$(OBJEXT) fig2dev.$(OBJEXT) free.$(OBJEXT) \
-	iso2tex.$(OBJEXT) localmath.$(OBJEXT) psfonts.$(OBJEXT) \
-	read1_3.$(OBJEXT) read.$(OBJEXT) trans_spline.$(OBJEXT) \
-	getopt.$(OBJEXT)
-fig2dev_OBJECTS = $(am_fig2dev_OBJECTS)
-LIBOBJDIR = ../fig2dev/lib/
-am__dirstamp = $(am__leading_dot)dirstamp
-fig2dev_DEPENDENCIES = $(LIBOBJS) dev/libdrivers.a
+AM_V_P = $(am__v_P_@AM_V@)
+am__v_P_ = $(am__v_P_@AM_DEFAULT_V@)
+am__v_P_0 = false
+am__v_P_1 = :
+AM_V_GEN = $(am__v_GEN_@AM_V@)
+am__v_GEN_ = $(am__v_GEN_@AM_DEFAULT_V@)
+am__v_GEN_0 = @echo "  GEN     " $@;
+am__v_GEN_1 = 
+AM_V_at = $(am__v_at_@AM_V@)
+am__v_at_ = $(am__v_at_@AM_DEFAULT_V@)
+am__v_at_0 = @
+am__v_at_1 = 
+SOURCES =
+DIST_SOURCES =
+RECURSIVE_TARGETS = all-recursive check-recursive cscopelist-recursive \
+	ctags-recursive dvi-recursive html-recursive info-recursive \
+	install-data-recursive install-dvi-recursive \
+	install-exec-recursive install-html-recursive \
+	install-info-recursive install-pdf-recursive \
+	install-ps-recursive install-recursive installcheck-recursive \
+	installdirs-recursive pdf-recursive ps-recursive \
+	tags-recursive uninstall-recursive
+am__can_run_installinfo = \
+  case $$AM_UPDATE_INFO_DIR in \
+    n|no|NO) false;; \
+    *) (install-info --version) >/dev/null 2>&1;; \
+  esac
 am__vpath_adj_setup = srcdirstrip=`echo "$(srcdir)" | sed 's|.|.|g'`;
 am__vpath_adj = case $$p in \
     $(srcdir)/*) f=`echo "$$p" | sed "s|^$$srcdirstrip/||"`;; \
@@ -151,67 +166,11 @@ am__uninstall_files_from_dir = { \
     || { echo " ( cd '$$dir' && rm -f" $$files ")"; \
          $(am__cd) "$$dir" && rm -f $$files; }; \
   }
-SCRIPTS = $(dist_bin_SCRIPTS)
-AM_V_P = $(am__v_P_@AM_V@)
-am__v_P_ = $(am__v_P_@AM_DEFAULT_V@)
-am__v_P_0 = false
-am__v_P_1 = :
-AM_V_GEN = $(am__v_GEN_@AM_V@)
-am__v_GEN_ = $(am__v_GEN_@AM_DEFAULT_V@)
-am__v_GEN_0 = @echo "  GEN     " $@;
-am__v_GEN_1 = 
-AM_V_at = $(am__v_at_@AM_V@)
-am__v_at_ = $(am__v_at_@AM_DEFAULT_V@)
-am__v_at_0 = @
-am__v_at_1 = 
-DEFAULT_INCLUDES = -I.@am__isrc@ -I$(top_builddir)
-depcomp = $(SHELL) $(top_srcdir)/depcomp
-am__maybe_remake_depfiles = depfiles
-am__depfiles_remade = ../fig2dev/lib/$(DEPDIR)/isascii.Po \
-	../fig2dev/lib/$(DEPDIR)/malloc.Po \
-	../fig2dev/lib/$(DEPDIR)/realloc.Po \
-	../fig2dev/lib/$(DEPDIR)/strcasecmp.Po \
-	../fig2dev/lib/$(DEPDIR)/strchr.Po \
-	../fig2dev/lib/$(DEPDIR)/strdup.Po \
-	../fig2dev/lib/$(DEPDIR)/strncasecmp.Po \
-	../fig2dev/lib/$(DEPDIR)/strndup.Po \
-	../fig2dev/lib/$(DEPDIR)/strrchr.Po \
-	../fig2dev/lib/$(DEPDIR)/strstr.Po ./$(DEPDIR)/arrow.Po \
-	./$(DEPDIR)/bound.Po ./$(DEPDIR)/colors.Po \
-	./$(DEPDIR)/creationdate.Po ./$(DEPDIR)/fig2dev.Po \
-	./$(DEPDIR)/free.Po ./$(DEPDIR)/getopt.Po \
-	./$(DEPDIR)/iso2tex.Po ./$(DEPDIR)/localmath.Po \
-	./$(DEPDIR)/psfonts.Po ./$(DEPDIR)/read.Po \
-	./$(DEPDIR)/read1_3.Po ./$(DEPDIR)/trans_spline.Po
-am__mv = mv -f
-COMPILE = $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) \
-	$(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
-AM_V_CC = $(am__v_CC_@AM_V@)
-am__v_CC_ = $(am__v_CC_@AM_DEFAULT_V@)
-am__v_CC_0 = @echo "  CC      " $@;
-am__v_CC_1 = 
-CCLD = $(CC)
-LINK = $(CCLD) $(AM_CFLAGS) $(CFLAGS) $(AM_LDFLAGS) $(LDFLAGS) -o $@
-AM_V_CCLD = $(am__v_CCLD_@AM_V@)
-am__v_CCLD_ = $(am__v_CCLD_@AM_DEFAULT_V@)
-am__v_CCLD_0 = @echo "  CCLD    " $@;
-am__v_CCLD_1 = 
-SOURCES = $(fig2dev_SOURCES)
-DIST_SOURCES = $(fig2dev_SOURCES)
-RECURSIVE_TARGETS = all-recursive check-recursive cscopelist-recursive \
-	ctags-recursive dvi-recursive html-recursive info-recursive \
-	install-data-recursive install-dvi-recursive \
-	install-exec-recursive install-html-recursive \
-	install-info-recursive install-pdf-recursive \
-	install-ps-recursive install-recursive installcheck-recursive \
-	installdirs-recursive pdf-recursive ps-recursive \
-	tags-recursive uninstall-recursive
-am__can_run_installinfo = \
-  case $$AM_UPDATE_INFO_DIR in \
-    n|no|NO) false;; \
-    *) (install-info --version) >/dev/null 2>&1;; \
-  esac
-DATA = $(dist_pkgdata_DATA)
+am__installdirs = "$(DESTDIR)$(appdefaultdir)" \
+	"$(DESTDIR)$(applicationsdir)" "$(DESTDIR)$(compkeydbdir)" \
+	"$(DESTDIR)$(icondir)"
+DATA = $(appdefault_DATA) $(dist_applications_DATA) \
+	$(dist_compkeydb_DATA) $(dist_icon_DATA)
 RECURSIVE_CLEAN_TARGETS = mostlyclean-recursive clean-recursive	\
   distclean-recursive maintainer-clean-recursive
 am__recursive_targets = \
@@ -219,8 +178,9 @@ am__recursive_targets = \
   $(RECURSIVE_CLEAN_TARGETS) \
   $(am__extra_recursive_targets)
 AM_RECURSIVE_TARGETS = $(am__recursive_targets:-recursive=) TAGS CTAGS \
-	distdir distdir-am
-am__tagged_files = $(HEADERS) $(SOURCES) $(TAGS_FILES) $(LISP)
+	cscope distdir distdir-am dist dist-all distcheck
+am__tagged_files = $(HEADERS) $(SOURCES) $(TAGS_FILES) \
+	$(LISP)config.h.in
 # Read a list of newline-separated strings from the standard input,
 # and print each of them once, without duplicates.  Input order is
 # *not* preserved.
@@ -239,19 +199,21 @@ am__define_uniq_tagged_files = \
   done | $(am__uniquify_input)`
 ETAGS = etags
 CTAGS = ctags
-DIST_SUBDIRS = dev bitmaps i18n tests
-am__DIST_COMMON = $(srcdir)/Makefile.in $(top_srcdir)/depcomp \
-	$(top_srcdir)/fig2dev/lib/isascii.c \
-	$(top_srcdir)/fig2dev/lib/malloc.c \
-	$(top_srcdir)/fig2dev/lib/realloc.c \
-	$(top_srcdir)/fig2dev/lib/strcasecmp.c \
-	$(top_srcdir)/fig2dev/lib/strchr.c \
-	$(top_srcdir)/fig2dev/lib/strdup.c \
-	$(top_srcdir)/fig2dev/lib/strncasecmp.c \
-	$(top_srcdir)/fig2dev/lib/strndup.c \
-	$(top_srcdir)/fig2dev/lib/strrchr.c \
-	$(top_srcdir)/fig2dev/lib/strstr.c
+CSCOPE = cscope
+DIST_SUBDIRS = $(SUBDIRS)
+am__DIST_COMMON = $(srcdir)/Makefile.in $(srcdir)/config.h.in \
+	$(top_srcdir)/app-defaults/Fig.in INSTALL README compile \
+	depcomp install-sh missing
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
+distdir = $(PACKAGE)-$(VERSION)
+top_distdir = $(distdir)
+am__remove_distdir = \
+  if test -d "$(distdir)"; then \
+    find "$(distdir)" -type d ! -perm -200 -exec chmod u+w {} ';' \
+      && rm -rf "$(distdir)" \
+      || { sleep 5 && rm -rf "$(distdir)"; }; \
+  else :; fi
+am__post_remove_distdir = $(am__remove_distdir)
 am__relativize = \
   dir0=`pwd`; \
   sed_first='s,^\([^/]*\)/.*$$,\1,'; \
@@ -277,11 +239,19 @@ am__relativize = \
     dir1=`echo "$$dir1" | sed -e "$$sed_rest"`; \
   done; \
   reldir="$$dir2"
+GZIP_ENV = --best
+DIST_ARCHIVES = $(distdir).tar.xz
+DIST_TARGETS = dist-xz
+distuninstallcheck_listfiles = find . -type f -print
+am__distuninstallcheck_listfiles = $(distuninstallcheck_listfiles) \
+  | sed 's|^\./|$(prefix)/|' | grep -v '$(infodir)/dir$$'
+distcleancheck_listfiles = find . -type f -print
 ACLOCAL = @ACLOCAL@
-ALTERNATE_PAPERSIZE = @ALTERNATE_PAPERSIZE@
+ALLOCA = @ALLOCA@
 AMTAR = @AMTAR@
 AM_DEFAULT_VERBOSITY = @AM_DEFAULT_VERBOSITY@
-AR = @AR@
+APPDEFAULTDIR = @APPDEFAULTDIR@
+APPLICATIONSDIR = @APPLICATIONSDIR@
 AUTOCONF = @AUTOCONF@
 AUTOHEADER = @AUTOHEADER@
 AUTOM4TE = @AUTOM4TE@
@@ -290,19 +260,21 @@ AWK = @AWK@
 CC = @CC@
 CCDEPMODE = @CCDEPMODE@
 CFLAGS = @CFLAGS@
+COMPKEYDBDIR = @COMPKEYDBDIR@
 CPP = @CPP@
 CPPFLAGS = @CPPFLAGS@
 CYGPATH_W = @CYGPATH_W@
-DEFAULT_PAPERSIZE = @DEFAULT_PAPERSIZE@
 DEFS = @DEFS@
 DEPDIR = @DEPDIR@
+DOCDIR = @DOCDIR@
 ECHO_C = @ECHO_C@
 ECHO_N = @ECHO_N@
 ECHO_T = @ECHO_T@
 EGREP = @EGREP@
 EXEEXT = @EXEEXT@
-FGREP = @FGREP@
 GREP = @GREP@
+HTMLDIR = @HTMLDIR@
+ICONDIR = @ICONDIR@
 INSTALL = @INSTALL@
 INSTALL_DATA = @INSTALL_DATA@
 INSTALL_PROGRAM = @INSTALL_PROGRAM@
@@ -326,29 +298,30 @@ PACKAGE_VERSION = @PACKAGE_VERSION@
 PATH_CPPFLAGS = @PATH_CPPFLAGS@
 PATH_LDFLAGS = @PATH_LDFLAGS@
 PATH_SEPARATOR = @PATH_SEPARATOR@
-RANLIB = @RANLIB@
+PKGDATADIR = @PKGDATADIR@
 RELEASE_DATE = @RELEASE_DATE@
 SET_MAKE = @SET_MAKE@
 SHELL = @SHELL@
 STRIP = @STRIP@
 VERSION = @VERSION@
-WITH_IBMGEC = @WITH_IBMGEC@
 XMKMF = @XMKMF@
+X_LIBS = @X_LIBS@
 abs_builddir = @abs_builddir@
 abs_srcdir = @abs_srcdir@
 abs_top_builddir = @abs_top_builddir@
 abs_top_srcdir = @abs_top_srcdir@
-ac_ct_AR = @ac_ct_AR@
 ac_ct_CC = @ac_ct_CC@
 am__include = @am__include@
 am__leading_dot = @am__leading_dot@
 am__quote = @am__quote@
 am__tar = @am__tar@
 am__untar = @am__untar@
+appdefaultdir = @appdefaultdir@
+applicationsdir = @applicationsdir@
 bindir = @bindir@
-bitmapsdir = @bitmapsdir@
 build_alias = @build_alias@
 builddir = @builddir@
+compkeydbdir = @compkeydbdir@
 datadir = @datadir@
 datarootdir = @datarootdir@
 docdir = @docdir@
@@ -356,7 +329,7 @@ dvidir = @dvidir@
 exec_prefix = @exec_prefix@
 host_alias = @host_alias@
 htmldir = @htmldir@
-i18ndir = @i18ndir@
+icondir = @icondir@
 includedir = @includedir@
 infodir = @infodir@
 install_sh = @install_sh@
@@ -380,222 +353,154 @@ target_alias = @target_alias@
 top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
-MAINTAINERCLEANFILES = Makefile.in
-SUBDIRS = dev bitmaps $(am__append_1) tests
-EXTRA_DIST = fig2ps2tex.csh
-
-# Copy the rgb.txt file into, usually, ../share/fig2dev/rgb.txt
-dist_pkgdata_DATA = rgb.txt
-AM_CPPFLAGS = $(PATH_CPPFLAGS) -DRGB_FILE=\"$(pkgdatadir)/rgb.txt\"
-AM_CFLAGS = -Wno-parentheses
-AM_LDFLAGS = $(PATH_LDFLAGS)
-fig2dev_SOURCES = alloc.h arrow.c bool.h bound.h bound.c colors.h colors.c \
-    creationdate.h creationdate.c drivers.h fig2dev.h fig2dev.c free.h free.c \
-    iso2tex.c localmath.h localmath.c object.h psfonts.c read1_3.c pathmax.h \
-    read.h read.c trans_spline.h trans_spline.c pi.h getopt.c
-
-fig2dev_LDADD = $(LIBOBJS) dev/libdrivers.a
-dist_bin_SCRIPTS = fig2ps2tex pic2tpic
-all: all-recursive
+ACLOCAL_AMFLAGS = -I m4
+SUBDIRS = src doc tests
+dist_icon_DATA = xfig.png
+appdefault_DATA = app-defaults/Fig
+dist_applications_DATA = xfig.desktop
+dist_compkeydb_DATA = CompKeyDB
+EXTRA_DIST = CHANGES FIGAPPS app-defaults splash-image \
+	update-version_m4 $(am__append_1)
+MAINTAINERCLEANFILES = Makefile.in aclocal.m4 config.h.in config.h.in~ configure
+xfig_librariesdir = Libraries
+all: config.h
+	$(MAKE) $(AM_MAKEFLAGS) all-recursive
 
 .SUFFIXES:
-.SUFFIXES: .c .o .obj
+am--refresh: Makefile
+	@:
 $(srcdir)/Makefile.in:  $(srcdir)/Makefile.am  $(am__configure_deps)
 	@for dep in $?; do \
 	  case '$(am__configure_deps)' in \
 	    *$$dep*) \
-	      ( cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh ) \
-	        && { if test -f $@; then exit 0; else break; fi; }; \
+	      echo ' cd $(srcdir) && $(AUTOMAKE) --foreign'; \
+	      $(am__cd) $(srcdir) && $(AUTOMAKE) --foreign \
+		&& exit 0; \
 	      exit 1;; \
 	  esac; \
 	done; \
-	echo ' cd $(top_srcdir) && $(AUTOMAKE) --foreign fig2dev/Makefile'; \
+	echo ' cd $(top_srcdir) && $(AUTOMAKE) --foreign Makefile'; \
 	$(am__cd) $(top_srcdir) && \
-	  $(AUTOMAKE) --foreign fig2dev/Makefile
+	  $(AUTOMAKE) --foreign Makefile
 Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
 	@case '$?' in \
 	  *config.status*) \
-	    cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh;; \
+	    echo ' $(SHELL) ./config.status'; \
+	    $(SHELL) ./config.status;; \
 	  *) \
-	    echo ' cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@ $(am__maybe_remake_depfiles)'; \
-	    cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@ $(am__maybe_remake_depfiles);; \
+	    echo ' cd $(top_builddir) && $(SHELL) ./config.status $@ $(am__maybe_remake_depfiles)'; \
+	    cd $(top_builddir) && $(SHELL) ./config.status $@ $(am__maybe_remake_depfiles);; \
 	esac;
 
 $(top_builddir)/config.status: $(top_srcdir)/configure $(CONFIG_STATUS_DEPENDENCIES)
-	cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh
+	$(SHELL) ./config.status --recheck
 
 $(top_srcdir)/configure:  $(am__configure_deps)
-	cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh
+	$(am__cd) $(srcdir) && $(AUTOCONF)
 $(ACLOCAL_M4):  $(am__aclocal_m4_deps)
-	cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh
+	$(am__cd) $(srcdir) && $(ACLOCAL) $(ACLOCAL_AMFLAGS)
 $(am__aclocal_m4_deps):
-install-binPROGRAMS: $(bin_PROGRAMS)
+
+config.h: stamp-h1
+	@test -f $@ || rm -f stamp-h1
+	@test -f $@ || $(MAKE) $(AM_MAKEFLAGS) stamp-h1
+
+stamp-h1: $(srcdir)/config.h.in $(top_builddir)/config.status
+	@rm -f stamp-h1
+	cd $(top_builddir) && $(SHELL) ./config.status config.h
+$(srcdir)/config.h.in:  $(am__configure_deps) 
+	($(am__cd) $(top_srcdir) && $(AUTOHEADER))
+	rm -f stamp-h1
+	touch $@
+
+distclean-hdr:
+	-rm -f config.h stamp-h1
+app-defaults/Fig: $(top_builddir)/config.status $(top_srcdir)/app-defaults/Fig.in
+	cd $(top_builddir) && $(SHELL) ./config.status $@
+install-appdefaultDATA: $(appdefault_DATA)
 	@$(NORMAL_INSTALL)
-	@list='$(bin_PROGRAMS)'; test -n "$(bindir)" || list=; \
+	@list='$(appdefault_DATA)'; test -n "$(appdefaultdir)" || list=; \
 	if test -n "$$list"; then \
-	  echo " $(MKDIR_P) '$(DESTDIR)$(bindir)'"; \
-	  $(MKDIR_P) "$(DESTDIR)$(bindir)" || exit 1; \
-	fi; \
-	for p in $$list; do echo "$$p $$p"; done | \
-	sed 's/$(EXEEXT)$$//' | \
-	while read p p1; do if test -f $$p \
-	  ; then echo "$$p"; echo "$$p"; else :; fi; \
-	done | \
-	sed -e 'p;s,.*/,,;n;h' \
-	    -e 's|.*|.|' \
-	    -e 'p;x;s,.*/,,;s/$(EXEEXT)$$//;$(transform);s/$$/$(EXEEXT)/' | \
-	sed 'N;N;N;s,\n, ,g' | \
-	$(AWK) 'BEGIN { files["."] = ""; dirs["."] = 1 } \
-	  { d=$$3; if (dirs[d] != 1) { print "d", d; dirs[d] = 1 } \
-	    if ($$2 == $$4) files[d] = files[d] " " $$1; \
-	    else { print "f", $$3 "/" $$4, $$1; } } \
-	  END { for (d in files) print "f", d, files[d] }' | \
-	while read type dir files; do \
-	    if test "$$dir" = .; then dir=; else dir=/$$dir; fi; \
-	    test -z "$$files" || { \
-	      echo " $(INSTALL_PROGRAM_ENV) $(INSTALL_PROGRAM) $$files '$(DESTDIR)$(bindir)$$dir'"; \
-	      $(INSTALL_PROGRAM_ENV) $(INSTALL_PROGRAM) $$files "$(DESTDIR)$(bindir)$$dir" || exit $$?; \
-	    } \
-	; done
-
-uninstall-binPROGRAMS:
-	@$(NORMAL_UNINSTALL)
-	@list='$(bin_PROGRAMS)'; test -n "$(bindir)" || list=; \
-	files=`for p in $$list; do echo "$$p"; done | \
-	  sed -e 'h;s,^.*/,,;s/$(EXEEXT)$$//;$(transform)' \
-	      -e 's/$$/$(EXEEXT)/' \
-	`; \
-	test -n "$$list" || exit 0; \
-	echo " ( cd '$(DESTDIR)$(bindir)' && rm -f" $$files ")"; \
-	cd "$(DESTDIR)$(bindir)" && rm -f $$files
-
-clean-binPROGRAMS:
-	-test -z "$(bin_PROGRAMS)" || rm -f $(bin_PROGRAMS)
-../fig2dev/lib/$(am__dirstamp):
-	@$(MKDIR_P) ../fig2dev/lib/
-	@: > ../fig2dev/lib/$(am__dirstamp)
-../fig2dev/lib/strchr.$(OBJEXT): ../fig2dev/lib/$(am__dirstamp)
-../fig2dev/lib/strrchr.$(OBJEXT): ../fig2dev/lib/$(am__dirstamp)
-../fig2dev/lib/realloc.$(OBJEXT): ../fig2dev/lib/$(am__dirstamp)
-../fig2dev/lib/strdup.$(OBJEXT): ../fig2dev/lib/$(am__dirstamp)
-../fig2dev/lib/strstr.$(OBJEXT): ../fig2dev/lib/$(am__dirstamp)
-../fig2dev/lib/isascii.$(OBJEXT): ../fig2dev/lib/$(am__dirstamp)
-../fig2dev/lib/strndup.$(OBJEXT): ../fig2dev/lib/$(am__dirstamp)
-../fig2dev/lib/strcasecmp.$(OBJEXT): ../fig2dev/lib/$(am__dirstamp)
-../fig2dev/lib/strncasecmp.$(OBJEXT): ../fig2dev/lib/$(am__dirstamp)
-../fig2dev/lib/malloc.$(OBJEXT): ../fig2dev/lib/$(am__dirstamp)
-
-fig2dev$(EXEEXT): $(fig2dev_OBJECTS) $(fig2dev_DEPENDENCIES) $(EXTRA_fig2dev_DEPENDENCIES) 
-	@rm -f fig2dev$(EXEEXT)
-	$(AM_V_CCLD)$(LINK) $(fig2dev_OBJECTS) $(fig2dev_LDADD) $(LIBS)
-install-dist_binSCRIPTS: $(dist_bin_SCRIPTS)
-	@$(NORMAL_INSTALL)
-	@list='$(dist_bin_SCRIPTS)'; test -n "$(bindir)" || list=; \
-	if test -n "$$list"; then \
-	  echo " $(MKDIR_P) '$(DESTDIR)$(bindir)'"; \
-	  $(MKDIR_P) "$(DESTDIR)$(bindir)" || exit 1; \
-	fi; \
-	for p in $$list; do \
-	  if test -f "$$p"; then d=; else d="$(srcdir)/"; fi; \
-	  if test -f "$$d$$p"; then echo "$$d$$p"; echo "$$p"; else :; fi; \
-	done | \
-	sed -e 'p;s,.*/,,;n' \
-	    -e 'h;s|.*|.|' \
-	    -e 'p;x;s,.*/,,;$(transform)' | sed 'N;N;N;s,\n, ,g' | \
-	$(AWK) 'BEGIN { files["."] = ""; dirs["."] = 1; } \
-	  { d=$$3; if (dirs[d] != 1) { print "d", d; dirs[d] = 1 } \
-	    if ($$2 == $$4) { files[d] = files[d] " " $$1; \
-	      if (++n[d] == $(am__install_max)) { \
-		print "f", d, files[d]; n[d] = 0; files[d] = "" } } \
-	    else { print "f", d "/" $$4, $$1 } } \
-	  END { for (d in files) print "f", d, files[d] }' | \
-	while read type dir files; do \
-	     if test "$$dir" = .; then dir=; else dir=/$$dir; fi; \
-	     test -z "$$files" || { \
-	       echo " $(INSTALL_SCRIPT) $$files '$(DESTDIR)$(bindir)$$dir'"; \
-	       $(INSTALL_SCRIPT) $$files "$(DESTDIR)$(bindir)$$dir" || exit $$?; \
-	     } \
-	; done
-
-uninstall-dist_binSCRIPTS:
-	@$(NORMAL_UNINSTALL)
-	@list='$(dist_bin_SCRIPTS)'; test -n "$(bindir)" || exit 0; \
-	files=`for p in $$list; do echo "$$p"; done | \
-	       sed -e 's,.*/,,;$(transform)'`; \
-	dir='$(DESTDIR)$(bindir)'; $(am__uninstall_files_from_dir)
-
-mostlyclean-compile:
-	-rm -f *.$(OBJEXT)
-
-distclean-compile:
-	-rm -f *.tab.c
-
-@AMDEP_TRUE@@am__include@ @am__quote@../fig2dev/lib/$(DEPDIR)/isascii.Po@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@../fig2dev/lib/$(DEPDIR)/malloc.Po@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@../fig2dev/lib/$(DEPDIR)/realloc.Po@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@../fig2dev/lib/$(DEPDIR)/strcasecmp.Po@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@../fig2dev/lib/$(DEPDIR)/strchr.Po@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@../fig2dev/lib/$(DEPDIR)/strdup.Po@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@../fig2dev/lib/$(DEPDIR)/strncasecmp.Po@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@../fig2dev/lib/$(DEPDIR)/strndup.Po@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@../fig2dev/lib/$(DEPDIR)/strrchr.Po@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@../fig2dev/lib/$(DEPDIR)/strstr.Po@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/arrow.Po@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/bound.Po@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/colors.Po@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/creationdate.Po@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/fig2dev.Po@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/free.Po@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/getopt.Po@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/iso2tex.Po@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/localmath.Po@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/psfonts.Po@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/read.Po@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/read1_3.Po@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/trans_spline.Po@am__quote@ # am--include-marker
-
-$(am__depfiles_remade):
-	@$(MKDIR_P) $(@D)
-	@echo '# dummy' >$@-t && $(am__mv) $@-t $@
-
-am--depfiles: $(am__depfiles_remade)
-
-.c.o:
-@am__fastdepCC_TRUE@	$(AM_V_CC)depbase=`echo $@ | sed 's|[^/]*$$|$(DEPDIR)/&|;s|\.o$$||'`;\
-@am__fastdepCC_TRUE@	$(COMPILE) -MT $@ -MD -MP -MF $$depbase.Tpo -c -o $@ $< &&\
-@am__fastdepCC_TRUE@	$(am__mv) $$depbase.Tpo $$depbase.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='$<' object='$@' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(COMPILE) -c -o $@ $<
-
-.c.obj:
-@am__fastdepCC_TRUE@	$(AM_V_CC)depbase=`echo $@ | sed 's|[^/]*$$|$(DEPDIR)/&|;s|\.obj$$||'`;\
-@am__fastdepCC_TRUE@	$(COMPILE) -MT $@ -MD -MP -MF $$depbase.Tpo -c -o $@ `$(CYGPATH_W) '$<'` &&\
-@am__fastdepCC_TRUE@	$(am__mv) $$depbase.Tpo $$depbase.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='$<' object='$@' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(COMPILE) -c -o $@ `$(CYGPATH_W) '$<'`
-install-dist_pkgdataDATA: $(dist_pkgdata_DATA)
-	@$(NORMAL_INSTALL)
-	@list='$(dist_pkgdata_DATA)'; test -n "$(pkgdatadir)" || list=; \
-	if test -n "$$list"; then \
-	  echo " $(MKDIR_P) '$(DESTDIR)$(pkgdatadir)'"; \
-	  $(MKDIR_P) "$(DESTDIR)$(pkgdatadir)" || exit 1; \
+	  echo " $(MKDIR_P) '$(DESTDIR)$(appdefaultdir)'"; \
+	  $(MKDIR_P) "$(DESTDIR)$(appdefaultdir)" || exit 1; \
 	fi; \
 	for p in $$list; do \
 	  if test -f "$$p"; then d=; else d="$(srcdir)/"; fi; \
 	  echo "$$d$$p"; \
 	done | $(am__base_list) | \
 	while read files; do \
-	  echo " $(INSTALL_DATA) $$files '$(DESTDIR)$(pkgdatadir)'"; \
-	  $(INSTALL_DATA) $$files "$(DESTDIR)$(pkgdatadir)" || exit $$?; \
+	  echo " $(INSTALL_DATA) $$files '$(DESTDIR)$(appdefaultdir)'"; \
+	  $(INSTALL_DATA) $$files "$(DESTDIR)$(appdefaultdir)" || exit $$?; \
 	done
 
-uninstall-dist_pkgdataDATA:
+uninstall-appdefaultDATA:
 	@$(NORMAL_UNINSTALL)
-	@list='$(dist_pkgdata_DATA)'; test -n "$(pkgdatadir)" || list=; \
+	@list='$(appdefault_DATA)'; test -n "$(appdefaultdir)" || list=; \
 	files=`for p in $$list; do echo $$p; done | sed -e 's|^.*/||'`; \
-	dir='$(DESTDIR)$(pkgdatadir)'; $(am__uninstall_files_from_dir)
+	dir='$(DESTDIR)$(appdefaultdir)'; $(am__uninstall_files_from_dir)
+install-dist_applicationsDATA: $(dist_applications_DATA)
+	@$(NORMAL_INSTALL)
+	@list='$(dist_applications_DATA)'; test -n "$(applicationsdir)" || list=; \
+	if test -n "$$list"; then \
+	  echo " $(MKDIR_P) '$(DESTDIR)$(applicationsdir)'"; \
+	  $(MKDIR_P) "$(DESTDIR)$(applicationsdir)" || exit 1; \
+	fi; \
+	for p in $$list; do \
+	  if test -f "$$p"; then d=; else d="$(srcdir)/"; fi; \
+	  echo "$$d$$p"; \
+	done | $(am__base_list) | \
+	while read files; do \
+	  echo " $(INSTALL_DATA) $$files '$(DESTDIR)$(applicationsdir)'"; \
+	  $(INSTALL_DATA) $$files "$(DESTDIR)$(applicationsdir)" || exit $$?; \
+	done
+
+uninstall-dist_applicationsDATA:
+	@$(NORMAL_UNINSTALL)
+	@list='$(dist_applications_DATA)'; test -n "$(applicationsdir)" || list=; \
+	files=`for p in $$list; do echo $$p; done | sed -e 's|^.*/||'`; \
+	dir='$(DESTDIR)$(applicationsdir)'; $(am__uninstall_files_from_dir)
+install-dist_compkeydbDATA: $(dist_compkeydb_DATA)
+	@$(NORMAL_INSTALL)
+	@list='$(dist_compkeydb_DATA)'; test -n "$(compkeydbdir)" || list=; \
+	if test -n "$$list"; then \
+	  echo " $(MKDIR_P) '$(DESTDIR)$(compkeydbdir)'"; \
+	  $(MKDIR_P) "$(DESTDIR)$(compkeydbdir)" || exit 1; \
+	fi; \
+	for p in $$list; do \
+	  if test -f "$$p"; then d=; else d="$(srcdir)/"; fi; \
+	  echo "$$d$$p"; \
+	done | $(am__base_list) | \
+	while read files; do \
+	  echo " $(INSTALL_DATA) $$files '$(DESTDIR)$(compkeydbdir)'"; \
+	  $(INSTALL_DATA) $$files "$(DESTDIR)$(compkeydbdir)" || exit $$?; \
+	done
+
+uninstall-dist_compkeydbDATA:
+	@$(NORMAL_UNINSTALL)
+	@list='$(dist_compkeydb_DATA)'; test -n "$(compkeydbdir)" || list=; \
+	files=`for p in $$list; do echo $$p; done | sed -e 's|^.*/||'`; \
+	dir='$(DESTDIR)$(compkeydbdir)'; $(am__uninstall_files_from_dir)
+install-dist_iconDATA: $(dist_icon_DATA)
+	@$(NORMAL_INSTALL)
+	@list='$(dist_icon_DATA)'; test -n "$(icondir)" || list=; \
+	if test -n "$$list"; then \
+	  echo " $(MKDIR_P) '$(DESTDIR)$(icondir)'"; \
+	  $(MKDIR_P) "$(DESTDIR)$(icondir)" || exit 1; \
+	fi; \
+	for p in $$list; do \
+	  if test -f "$$p"; then d=; else d="$(srcdir)/"; fi; \
+	  echo "$$d$$p"; \
+	done | $(am__base_list) | \
+	while read files; do \
+	  echo " $(INSTALL_DATA) $$files '$(DESTDIR)$(icondir)'"; \
+	  $(INSTALL_DATA) $$files "$(DESTDIR)$(icondir)" || exit $$?; \
+	done
+
+uninstall-dist_iconDATA:
+	@$(NORMAL_UNINSTALL)
+	@list='$(dist_icon_DATA)'; test -n "$(icondir)" || list=; \
+	files=`for p in $$list; do echo $$p; done | sed -e 's|^.*/||'`; \
+	dir='$(DESTDIR)$(icondir)'; $(am__uninstall_files_from_dir)
 
 # This directory's subdirectories are mostly independent; you can cd
 # into them and run 'make' without going through this Makefile.
@@ -677,6 +582,12 @@ GTAGS:
 	here=`$(am__cd) $(top_builddir) && pwd` \
 	  && $(am__cd) $(top_srcdir) \
 	  && gtags -i $(GTAGS_ARGS) "$$here"
+cscope: cscope.files
+	test ! -s cscope.files \
+	  || $(CSCOPE) -b -q $(AM_CSCOPEFLAGS) $(CSCOPEFLAGS) -i cscope.files $(CSCOPE_ARGS)
+clean-cscope:
+	-rm -f cscope.files
+cscope.files: clean-cscope cscopelist
 cscopelist: cscopelist-recursive
 
 cscopelist-am: $(am__tagged_files)
@@ -695,11 +606,15 @@ cscopelist-am: $(am__tagged_files)
 
 distclean-tags:
 	-rm -f TAGS ID GTAGS GRTAGS GSYMS GPATH tags
+	-rm -f cscope.out cscope.in.out cscope.po.out cscope.files
+@XFIG_LIBRARIES_FALSE@dist-hook:
 
 distdir: $(BUILT_SOURCES)
 	$(MAKE) $(AM_MAKEFLAGS) distdir-am
 
 distdir-am: $(DISTFILES)
+	$(am__remove_distdir)
+	test -d "$(distdir)" || mkdir "$(distdir)"
 	@srcdirstrip=`echo "$(srcdir)" | sed 's/[].[^$$\\*]/\\\\&/g'`; \
 	topsrcdirstrip=`echo "$(top_srcdir)" | sed 's/[].[^$$\\*]/\\\\&/g'`; \
 	list='$(DISTFILES)'; \
@@ -754,12 +669,145 @@ distdir-am: $(DISTFILES)
 	      || exit 1; \
 	  fi; \
 	done
+	$(MAKE) $(AM_MAKEFLAGS) \
+	  top_distdir="$(top_distdir)" distdir="$(distdir)" \
+	  dist-hook
+	-test -n "$(am__skip_mode_fix)" \
+	|| find "$(distdir)" -type d ! -perm -755 \
+		-exec chmod u+rwx,go+rx {} \; -o \
+	  ! -type d ! -perm -444 -links 1 -exec chmod a+r {} \; -o \
+	  ! -type d ! -perm -400 -exec chmod a+r {} \; -o \
+	  ! -type d ! -perm -444 -exec $(install_sh) -c -m a+r {} {} \; \
+	|| chmod -R a+r "$(distdir)"
+dist-gzip: distdir
+	tardir=$(distdir) && $(am__tar) | eval GZIP= gzip $(GZIP_ENV) -c >$(distdir).tar.gz
+	$(am__post_remove_distdir)
+
+dist-bzip2: distdir
+	tardir=$(distdir) && $(am__tar) | BZIP2=$${BZIP2--9} bzip2 -c >$(distdir).tar.bz2
+	$(am__post_remove_distdir)
+
+dist-lzip: distdir
+	tardir=$(distdir) && $(am__tar) | lzip -c $${LZIP_OPT--9} >$(distdir).tar.lz
+	$(am__post_remove_distdir)
+dist-xz: distdir
+	tardir=$(distdir) && $(am__tar) | XZ_OPT=$${XZ_OPT--e} xz -c >$(distdir).tar.xz
+	$(am__post_remove_distdir)
+
+dist-tarZ: distdir
+	@echo WARNING: "Support for distribution archives compressed with" \
+		       "legacy program 'compress' is deprecated." >&2
+	@echo WARNING: "It will be removed altogether in Automake 2.0" >&2
+	tardir=$(distdir) && $(am__tar) | compress -c >$(distdir).tar.Z
+	$(am__post_remove_distdir)
+
+dist-shar: distdir
+	@echo WARNING: "Support for shar distribution archives is" \
+	               "deprecated." >&2
+	@echo WARNING: "It will be removed altogether in Automake 2.0" >&2
+	shar $(distdir) | eval GZIP= gzip $(GZIP_ENV) -c >$(distdir).shar.gz
+	$(am__post_remove_distdir)
+
+dist-zip: distdir
+	-rm -f $(distdir).zip
+	zip -rq $(distdir).zip $(distdir)
+	$(am__post_remove_distdir)
+
+dist dist-all:
+	$(MAKE) $(AM_MAKEFLAGS) $(DIST_TARGETS) am__post_remove_distdir='@:'
+	$(am__post_remove_distdir)
+
+# This target untars the dist file and tries a VPATH configuration.  Then
+# it guarantees that the distribution is self-contained by making another
+# tarfile.
+distcheck: dist
+	case '$(DIST_ARCHIVES)' in \
+	*.tar.gz*) \
+	  eval GZIP= gzip $(GZIP_ENV) -dc $(distdir).tar.gz | $(am__untar) ;;\
+	*.tar.bz2*) \
+	  bzip2 -dc $(distdir).tar.bz2 | $(am__untar) ;;\
+	*.tar.lz*) \
+	  lzip -dc $(distdir).tar.lz | $(am__untar) ;;\
+	*.tar.xz*) \
+	  xz -dc $(distdir).tar.xz | $(am__untar) ;;\
+	*.tar.Z*) \
+	  uncompress -c $(distdir).tar.Z | $(am__untar) ;;\
+	*.shar.gz*) \
+	  eval GZIP= gzip $(GZIP_ENV) -dc $(distdir).shar.gz | unshar ;;\
+	*.zip*) \
+	  unzip $(distdir).zip ;;\
+	esac
+	chmod -R a-w $(distdir)
+	chmod u+w $(distdir)
+	mkdir $(distdir)/_build $(distdir)/_build/sub $(distdir)/_inst
+	chmod a-w $(distdir)
+	test -d $(distdir)/_build || exit 0; \
+	dc_install_base=`$(am__cd) $(distdir)/_inst && pwd | sed -e 's,^[^:\\/]:[\\/],/,'` \
+	  && dc_destdir="$${TMPDIR-/tmp}/am-dc-$$$$/" \
+	  && am__cwd=`pwd` \
+	  && $(am__cd) $(distdir)/_build/sub \
+	  && ../../configure \
+	    $(AM_DISTCHECK_CONFIGURE_FLAGS) \
+	    $(DISTCHECK_CONFIGURE_FLAGS) \
+	    --srcdir=../.. --prefix="$$dc_install_base" \
+	  && $(MAKE) $(AM_MAKEFLAGS) \
+	  && $(MAKE) $(AM_MAKEFLAGS) dvi \
+	  && $(MAKE) $(AM_MAKEFLAGS) check \
+	  && $(MAKE) $(AM_MAKEFLAGS) install \
+	  && $(MAKE) $(AM_MAKEFLAGS) installcheck \
+	  && $(MAKE) $(AM_MAKEFLAGS) uninstall \
+	  && $(MAKE) $(AM_MAKEFLAGS) distuninstallcheck_dir="$$dc_install_base" \
+	        distuninstallcheck \
+	  && chmod -R a-w "$$dc_install_base" \
+	  && ({ \
+	       (cd ../.. && umask 077 && mkdir "$$dc_destdir") \
+	       && $(MAKE) $(AM_MAKEFLAGS) DESTDIR="$$dc_destdir" install \
+	       && $(MAKE) $(AM_MAKEFLAGS) DESTDIR="$$dc_destdir" uninstall \
+	       && $(MAKE) $(AM_MAKEFLAGS) DESTDIR="$$dc_destdir" \
+	            distuninstallcheck_dir="$$dc_destdir" distuninstallcheck; \
+	      } || { rm -rf "$$dc_destdir"; exit 1; }) \
+	  && rm -rf "$$dc_destdir" \
+	  && $(MAKE) $(AM_MAKEFLAGS) dist \
+	  && rm -rf $(DIST_ARCHIVES) \
+	  && $(MAKE) $(AM_MAKEFLAGS) distcleancheck \
+	  && cd "$$am__cwd" \
+	  || exit 1
+	$(am__post_remove_distdir)
+	@(echo "$(distdir) archives ready for distribution: "; \
+	  list='$(DIST_ARCHIVES)'; for i in $$list; do echo $$i; done) | \
+	  sed -e 1h -e 1s/./=/g -e 1p -e 1x -e '$$p' -e '$$x'
+distuninstallcheck:
+	@test -n '$(distuninstallcheck_dir)' || { \
+	  echo 'ERROR: trying to run $@ with an empty' \
+	       '$$(distuninstallcheck_dir)' >&2; \
+	  exit 1; \
+	}; \
+	$(am__cd) '$(distuninstallcheck_dir)' || { \
+	  echo 'ERROR: cannot chdir into $(distuninstallcheck_dir)' >&2; \
+	  exit 1; \
+	}; \
+	test `$(am__distuninstallcheck_listfiles) | wc -l` -eq 0 \
+	   || { echo "ERROR: files left after uninstall:" ; \
+	        if test -n "$(DESTDIR)"; then \
+	          echo "  (check DESTDIR support)"; \
+	        fi ; \
+	        $(distuninstallcheck_listfiles) ; \
+	        exit 1; } >&2
+distcleancheck: distclean
+	@if test '$(srcdir)' = . ; then \
+	  echo "ERROR: distcleancheck can only run from a VPATH build" ; \
+	  exit 1 ; \
+	fi
+	@test `$(distcleancheck_listfiles) | wc -l` -eq 0 \
+	  || { echo "ERROR: files left in build directory after distclean:" ; \
+	       $(distcleancheck_listfiles) ; \
+	       exit 1; } >&2
 check-am: all-am
 check: check-recursive
-all-am: Makefile $(PROGRAMS) $(SCRIPTS) $(DATA)
+all-am: Makefile $(DATA) config.h
 installdirs: installdirs-recursive
 installdirs-am:
-	for dir in "$(DESTDIR)$(bindir)" "$(DESTDIR)$(bindir)" "$(DESTDIR)$(pkgdatadir)"; do \
+	for dir in "$(DESTDIR)$(appdefaultdir)" "$(DESTDIR)$(applicationsdir)" "$(DESTDIR)$(compkeydbdir)" "$(DESTDIR)$(icondir)"; do \
 	  test -z "$$dir" || $(MKDIR_P) "$$dir"; \
 	done
 install: install-recursive
@@ -782,59 +830,27 @@ install-strip:
 	    "INSTALL_PROGRAM_ENV=STRIPPROG='$(STRIP)'" install; \
 	fi
 mostlyclean-generic:
-	-rm -f ../fig2dev/lib/isascii.$(OBJEXT)
-	-rm -f ../fig2dev/lib/malloc.$(OBJEXT)
-	-rm -f ../fig2dev/lib/realloc.$(OBJEXT)
-	-rm -f ../fig2dev/lib/strcasecmp.$(OBJEXT)
-	-rm -f ../fig2dev/lib/strchr.$(OBJEXT)
-	-rm -f ../fig2dev/lib/strdup.$(OBJEXT)
-	-rm -f ../fig2dev/lib/strncasecmp.$(OBJEXT)
-	-rm -f ../fig2dev/lib/strndup.$(OBJEXT)
-	-rm -f ../fig2dev/lib/strrchr.$(OBJEXT)
-	-rm -f ../fig2dev/lib/strstr.$(OBJEXT)
 
 clean-generic:
 
 distclean-generic:
 	-test -z "$(CONFIG_CLEAN_FILES)" || rm -f $(CONFIG_CLEAN_FILES)
 	-test . = "$(srcdir)" || test -z "$(CONFIG_CLEAN_VPATH_FILES)" || rm -f $(CONFIG_CLEAN_VPATH_FILES)
-	-rm -f ../fig2dev/lib/$(am__dirstamp)
 
 maintainer-clean-generic:
 	@echo "This command is intended for maintainers to use"
 	@echo "it deletes files that may require special tools to rebuild."
 	-test -z "$(MAINTAINERCLEANFILES)" || rm -f $(MAINTAINERCLEANFILES)
+@XFIG_LIBRARIES_FALSE@uninstall-local:
+@XFIG_LIBRARIES_FALSE@install-data-hook:
 clean: clean-recursive
 
-clean-am: clean-binPROGRAMS clean-generic mostlyclean-am
+clean-am: clean-generic mostlyclean-am
 
 distclean: distclean-recursive
-		-rm -f ../fig2dev/lib/$(DEPDIR)/isascii.Po
-	-rm -f ../fig2dev/lib/$(DEPDIR)/malloc.Po
-	-rm -f ../fig2dev/lib/$(DEPDIR)/realloc.Po
-	-rm -f ../fig2dev/lib/$(DEPDIR)/strcasecmp.Po
-	-rm -f ../fig2dev/lib/$(DEPDIR)/strchr.Po
-	-rm -f ../fig2dev/lib/$(DEPDIR)/strdup.Po
-	-rm -f ../fig2dev/lib/$(DEPDIR)/strncasecmp.Po
-	-rm -f ../fig2dev/lib/$(DEPDIR)/strndup.Po
-	-rm -f ../fig2dev/lib/$(DEPDIR)/strrchr.Po
-	-rm -f ../fig2dev/lib/$(DEPDIR)/strstr.Po
-	-rm -f ./$(DEPDIR)/arrow.Po
-	-rm -f ./$(DEPDIR)/bound.Po
-	-rm -f ./$(DEPDIR)/colors.Po
-	-rm -f ./$(DEPDIR)/creationdate.Po
-	-rm -f ./$(DEPDIR)/fig2dev.Po
-	-rm -f ./$(DEPDIR)/free.Po
-	-rm -f ./$(DEPDIR)/getopt.Po
-	-rm -f ./$(DEPDIR)/iso2tex.Po
-	-rm -f ./$(DEPDIR)/localmath.Po
-	-rm -f ./$(DEPDIR)/psfonts.Po
-	-rm -f ./$(DEPDIR)/read.Po
-	-rm -f ./$(DEPDIR)/read1_3.Po
-	-rm -f ./$(DEPDIR)/trans_spline.Po
+	-rm -f $(am__CONFIG_DISTCLEAN_FILES)
 	-rm -f Makefile
-distclean-am: clean-am distclean-compile distclean-generic \
-	distclean-tags
+distclean-am: clean-am distclean-generic distclean-hdr distclean-tags
 
 dvi: dvi-recursive
 
@@ -848,13 +864,15 @@ info: info-recursive
 
 info-am:
 
-install-data-am: install-dist_pkgdataDATA
-
+install-data-am: install-appdefaultDATA install-dist_applicationsDATA \
+	install-dist_compkeydbDATA install-dist_iconDATA
+	@$(NORMAL_INSTALL)
+	$(MAKE) $(AM_MAKEFLAGS) install-data-hook
 install-dvi: install-dvi-recursive
 
 install-dvi-am:
 
-install-exec-am: install-binPROGRAMS install-dist_binSCRIPTS
+install-exec-am:
 
 install-html: install-html-recursive
 
@@ -877,35 +895,14 @@ install-ps-am:
 installcheck-am:
 
 maintainer-clean: maintainer-clean-recursive
-		-rm -f ../fig2dev/lib/$(DEPDIR)/isascii.Po
-	-rm -f ../fig2dev/lib/$(DEPDIR)/malloc.Po
-	-rm -f ../fig2dev/lib/$(DEPDIR)/realloc.Po
-	-rm -f ../fig2dev/lib/$(DEPDIR)/strcasecmp.Po
-	-rm -f ../fig2dev/lib/$(DEPDIR)/strchr.Po
-	-rm -f ../fig2dev/lib/$(DEPDIR)/strdup.Po
-	-rm -f ../fig2dev/lib/$(DEPDIR)/strncasecmp.Po
-	-rm -f ../fig2dev/lib/$(DEPDIR)/strndup.Po
-	-rm -f ../fig2dev/lib/$(DEPDIR)/strrchr.Po
-	-rm -f ../fig2dev/lib/$(DEPDIR)/strstr.Po
-	-rm -f ./$(DEPDIR)/arrow.Po
-	-rm -f ./$(DEPDIR)/bound.Po
-	-rm -f ./$(DEPDIR)/colors.Po
-	-rm -f ./$(DEPDIR)/creationdate.Po
-	-rm -f ./$(DEPDIR)/fig2dev.Po
-	-rm -f ./$(DEPDIR)/free.Po
-	-rm -f ./$(DEPDIR)/getopt.Po
-	-rm -f ./$(DEPDIR)/iso2tex.Po
-	-rm -f ./$(DEPDIR)/localmath.Po
-	-rm -f ./$(DEPDIR)/psfonts.Po
-	-rm -f ./$(DEPDIR)/read.Po
-	-rm -f ./$(DEPDIR)/read1_3.Po
-	-rm -f ./$(DEPDIR)/trans_spline.Po
+	-rm -f $(am__CONFIG_DISTCLEAN_FILES)
+	-rm -rf $(top_srcdir)/autom4te.cache
 	-rm -f Makefile
 maintainer-clean-am: distclean-am maintainer-clean-generic
 
 mostlyclean: mostlyclean-recursive
 
-mostlyclean-am: mostlyclean-compile mostlyclean-generic
+mostlyclean-am: mostlyclean-generic
 
 pdf: pdf-recursive
 
@@ -915,40 +912,81 @@ ps: ps-recursive
 
 ps-am:
 
-uninstall-am: uninstall-binPROGRAMS uninstall-dist_binSCRIPTS \
-	uninstall-dist_pkgdataDATA
-	@$(NORMAL_INSTALL)
-	$(MAKE) $(AM_MAKEFLAGS) uninstall-hook
-.MAKE: $(am__recursive_targets) install-am install-strip uninstall-am
+uninstall-am: uninstall-appdefaultDATA uninstall-dist_applicationsDATA \
+	uninstall-dist_compkeydbDATA uninstall-dist_iconDATA \
+	uninstall-local
+
+.MAKE: $(am__recursive_targets) all install-am install-data-am \
+	install-strip
 
 .PHONY: $(am__recursive_targets) CTAGS GTAGS TAGS all all-am \
-	am--depfiles check check-am clean clean-binPROGRAMS \
-	clean-generic cscopelist-am ctags ctags-am distclean \
-	distclean-compile distclean-generic distclean-tags distdir dvi \
+	am--refresh check check-am clean clean-cscope clean-generic \
+	cscope cscopelist-am ctags ctags-am dist dist-all dist-bzip2 \
+	dist-gzip dist-hook dist-lzip dist-shar dist-tarZ dist-xz \
+	dist-zip distcheck distclean distclean-generic distclean-hdr \
+	distclean-tags distcleancheck distdir distuninstallcheck dvi \
 	dvi-am html html-am info info-am install install-am \
-	install-binPROGRAMS install-data install-data-am \
-	install-dist_binSCRIPTS install-dist_pkgdataDATA install-dvi \
+	install-appdefaultDATA install-data install-data-am \
+	install-data-hook install-dist_applicationsDATA \
+	install-dist_compkeydbDATA install-dist_iconDATA install-dvi \
 	install-dvi-am install-exec install-exec-am install-html \
 	install-html-am install-info install-info-am install-man \
 	install-pdf install-pdf-am install-ps install-ps-am \
 	install-strip installcheck installcheck-am installdirs \
 	installdirs-am maintainer-clean maintainer-clean-generic \
-	mostlyclean mostlyclean-compile mostlyclean-generic pdf pdf-am \
-	ps ps-am tags tags-am uninstall uninstall-am \
-	uninstall-binPROGRAMS uninstall-dist_binSCRIPTS \
-	uninstall-dist_pkgdataDATA uninstall-hook
+	mostlyclean mostlyclean-generic pdf pdf-am ps ps-am tags \
+	tags-am uninstall uninstall-am uninstall-appdefaultDATA \
+	uninstall-dist_applicationsDATA uninstall-dist_compkeydbDATA \
+	uninstall-dist_iconDATA uninstall-local
 
 .PRECIOUS: Makefile
 
 
-# CONFIG_HEADER is config.h, which contains PACKAGE_VERSION. If that
-# changes, fig2dev should take up the new version string.
-# other files also depend on PACKAGE_VERSION, see dev/Makefile.am and transfig
-# config.h anyhow depends on all .m4-files
-fig2dev.$(OBJEXT): $(CONFIG_HEADER)
+# The generated Makefile lets configure and config.h.in depend on configure.ac,
+# and on all .m4 files. If configure.ac is changed, configure is re-created,
+# then config.h, probably only after version.m4 is updated, and configure
+# is again recreated and run. Only a nuisance, though.
+@ENABLE_VERSIONING_TRUE@version.m4: configure.ac Makefile.am src/*.c src/*.h
+@ENABLE_VERSIONING_TRUE@	. ./update-version_m4
 
-uninstall-hook:
-	rmdir "$(DESTDIR)$(pkgdatadir)"
+# a fragment, to test compilation with different configure-flags
+compile-check: distdir
+	chmod u+w $(distdir)
+	mkdir $(distdir)/_build $(distdir)/_build/sub
+	cd $(distdir)/_build/sub \
+	&& ../../configure --srcdir=../.. --without-xfig-libraries --disable-jpeg \
+	&& $(MAKE) -j $(AM_MAKEFLAGS) \
+	&& $(MAKE) $(AM_MAKEFLAGS) check \
+	&& $(MAKE) $(AM_MAKEFLAGS) clean
+	cd $(distdir)/_build/sub \
+	../../configure --srcdir=../.. --without-xfig-libraries --disable-xpm --enable-xpm-icon \
+	&& $(MAKE) -j $(AM_MAKEFLAGS) \
+	&& $(MAKE) $(AM_MAKEFLAGS) check \
+	&& $(MAKE) $(AM_MAKEFLAGS) clean
+
+# do not distribute Maps/USA/assemble and Maps/Canada/assemble
+# See info automake, 14.3 The dist Hook, for an example with chmod u+w.
+@XFIG_LIBRARIES_TRUE@dist-hook:
+@XFIG_LIBRARIES_TRUE@	test -d "$(distdir)/$(xfig_librariesdir)/Maps" \
+@XFIG_LIBRARIES_TRUE@	&& cd "$(distdir)/$(xfig_librariesdir)/Maps" && \
+@XFIG_LIBRARIES_TRUE@		for p in USA Canada; do \
+@XFIG_LIBRARIES_TRUE@			test -f "$$p/assemble" \
+@XFIG_LIBRARIES_TRUE@			&& { test -w "$$p" || chmod u+w "$$p"; } \
+@XFIG_LIBRARIES_TRUE@			&& rm -f "$$p/assemble" || :; \
+@XFIG_LIBRARIES_TRUE@		done || :
+
+# Libraries might not be distributed - so test, whether the
+# source is there, before trying to copy it to the destination.
+@XFIG_LIBRARIES_TRUE@install-data-hook:
+@XFIG_LIBRARIES_TRUE@	test -d "$(srcdir)/$(xfig_librariesdir)" && { \
+@XFIG_LIBRARIES_TRUE@		$(MKDIR_P) "$(DESTDIR)$(pkgdatadir)" \
+@XFIG_LIBRARIES_TRUE@		&& cp -Rp "$(srcdir)/$(xfig_librariesdir)" "$(DESTDIR)$(pkgdatadir)" \
+@XFIG_LIBRARIES_TRUE@		&& chmod -R u+rwX "$(DESTDIR)$(pkgdatadir)" || exit 1; } \
+@XFIG_LIBRARIES_TRUE@		|| :
+
+@XFIG_LIBRARIES_TRUE@uninstall-local:
+@XFIG_LIBRARIES_TRUE@	test -d "$(DESTDIR)$(pkgdatadir)/$(xfig_librariesdir)" \
+@XFIG_LIBRARIES_TRUE@	&& rm -rf "$(DESTDIR)$(pkgdatadir)/$(xfig_librariesdir)" || :
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.
