@@ -81,6 +81,8 @@ int last_action[] = {F_NULL, F_NULL, F_NULL, F_NULL, F_NULL};
 // KAB redo action stack
 int redo_action_stack[] = {F_NULL, F_NULL, F_NULL, F_NULL, F_NULL};
 
+F_compound five_objects[5]; // F_compound object to store the last five objects
+
 /*************** LOCAL *****************/
 
 static int	last_object;  // KAB may need to change this to an int * for multiple objects
@@ -115,9 +117,11 @@ void swap_newp_lastp (void);
 void
 undo(void)
 {
+
 	printf("undo function called\n");
-	printf("popping action from undo stack\n");
-	pop_undo_stack_action();
+	printf("saved_objects.splines: %d\n", saved_objects.splines);
+	printf("objects.splines: %d\n", objects.splines);
+
 
     /* turn off Compose key LED */
     setCompLED(0);
@@ -189,6 +193,13 @@ undo(void)
 	put_msg("Nothing to UNDO");
 	return;
     }
+
+		printf("popping action from undo stack\n");
+		pop_undo_stack_action();
+		printf("Undo Complete\n");
+		printf("saved_objects.splines: %d\n", saved_objects.splines);
+		printf("objects.splines: %d\n", objects.splines);
+
     put_msg("Undo complete");
 }
 
@@ -1077,6 +1088,38 @@ void push_redo_stack_action(int action) {
 			}
 		}
   }
+}
+
+void push_new_object(F_compound new_object) {
+	printf("pushing object\n");
+	printf("Displaying object stack:\n");
+	for(int index = 4; index >= 0; index--) {
+		printf("five_objects[%d] = %d\n", index, five_objects[index]);
+		if (index == 0) {
+			five_objects[0] = new_object;
+		}
+		else{
+			five_objects[index] = five_objects[index - 1];
+		}
+  }
+}
+
+void pop_last_object(){
+	F_compound empty_object = {0, 0, { 0, 0 }, { 0, 0 },
+					NULL, NULL, NULL, NULL, NULL, NULL, NULL};
+	printf("popping object\n");
+	printf("Displaying object stack:\n");
+	for(int i = 0; i < 5; i++)
+	{
+		printf("five_objects[%d] = %d\n", i, five_objects[i]);
+		if(i != 4)
+		{
+			five_objects[i] = five_objects[i + 1];  // move stack actions up by index 1
+		}
+		else if(i == 4) {
+			five_objects[4] = empty_object; // set last element in action stack to null
+		}
+	}
 }
 
 ////////////////// End Functions Added by Kyle Bielby //////////////////////////

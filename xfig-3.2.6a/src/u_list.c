@@ -117,7 +117,7 @@ list_delete_line(F_line **line_list, F_line *line)
 void
 list_delete_spline(F_spline **spline_list, F_spline *spline)
 {
-  printf("Deleting Spline %d\n", spline);
+  printf("Spline list: %d\n", *spline_list);
     F_spline	   *q, *r;
 
     if (*spline_list == NULL)
@@ -130,15 +130,25 @@ list_delete_spline(F_spline **spline_list, F_spline *spline)
     if (spline_list == &objects.splines)
 	     remove_depth(O_SPLINE, spline->depth);
        for (q = r = *spline_list; r != NULL; q = r, r = r->next) {
+           // printf("q, r: %d, %d\n", q, r);
+           // printf("*spline_list: %d\n", *spline_list);
 	         if (r == spline) {
 	            if (r == *spline_list)
+              {
+                // printf("(*spline_list)->next: %d\n", (*spline_list)->next);
 		            *spline_list = (*spline_list)->next;
-	            else
-		            q->next = r->next;
+              }
+	            else{
+                // printf("q->next: %d\n", q->next);
+                // printf("r->next: %d\n", r->next);
+                q->next = r->next;
+              }
+
 	            break;
 	          }
        }
         spline->next = NULL;
+        // printf("Spline list: %d\n", *spline_list);
 }
 
 void
