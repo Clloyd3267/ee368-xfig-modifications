@@ -586,6 +586,7 @@ void undo_add(void)
 
 void undo_delete(void)
 {
+	printf("undo_delete\n");
     char	   *swp_comm;
     int		    xmin, ymin, xmax, ymax;
     char	    ctemp[PATH_MAX];
@@ -1090,7 +1091,8 @@ void push_redo_stack_action(int action) {
   }
 }
 
-void push_new_object(F_compound new_object) {
+void push_new_object(F_compound new_object)
+{
 	printf("pushing object\n");
 	printf("Displaying object stack:\n");
 	for(int index = 4; index >= 0; index--) {
@@ -1104,7 +1106,8 @@ void push_new_object(F_compound new_object) {
   }
 }
 
-void pop_last_object(){
+void pop_last_object()
+{
 	F_compound empty_object = {0, 0, { 0, 0 }, { 0, 0 },
 					NULL, NULL, NULL, NULL, NULL, NULL, NULL};
 	printf("popping object\n");
