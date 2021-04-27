@@ -552,64 +552,68 @@ void undo_add(void)
     switch (last_five_objects[0]) {
       case O_POLYLINE:
 				printf("POLYLINE\n");
-				// list_delete_line(&objects.lines, saved_objects.lines);
 				display_lines();
-				list_delete_line(&objects.lines, active_object.lines);
-				display_lines();
-				redisplay_line(active_object.lines);
-				active_object.lines = last_line(objects.lines);
-				// redisplay_line(saved_objects.lines);
+				list_delete_line(&objects.lines, saved_objects.lines);
+				redisplay_line(saved_objects.lines);
 
+				saved_objects.lines = last_line(objects.lines);
+				// list_delete_line(&objects.lines, active_object.lines);
+				// redisplay_line(active_object.lines);
+				// active_object.lines = last_line(objects.lines);
+				display_lines();
 				break;
       case O_ELLIPSE:
 				printf("O_ELLIPSE\n");
-				// list_delete_ellipse(&objects.ellipses, saved_objects.ellipses);
-				list_delete_ellipse(&objects.ellipses, active_object.ellipses);
-				redisplay_ellipse(active_object.ellipses);
-				active_object.ellipses = last_ellipse(objects.ellipses);
-				// redisplay_ellipse(saved_objects.ellipses);
+				list_delete_ellipse(&objects.ellipses, saved_objects.ellipses);
+				redisplay_ellipse(saved_objects.ellipses);
 
+				saved_objects.ellipses = last_ellipse(objects.ellipses);
+				// list_delete_ellipse(&objects.ellipses, active_object.ellipses);
+				// redisplay_ellipse(active_object.ellipses);
+				// active_object.ellipses = last_ellipse(objects.ellipses);
 				break;
       case O_TXT:
 			  printf("O_TXT\n");
-				// list_delete_text(&objects.texts, saved_objects.texts);
-				list_delete_text(&objects.texts, active_object.texts);
-				redisplay_text(active_object.texts);
-				active_object.texts = last_text(objects.texts);
-				// redisplay_text(saved_objects.texts);
+				list_delete_text(&objects.texts, saved_objects.texts);
+				redisplay_text(saved_objects.texts);
 
+				saved_objects.texts = last_text(objects.texts);
+				// list_delete_text(&objects.texts, active_object.texts);
+				// redisplay_text(active_object.texts);
+				// active_object.texts = last_text(objects.texts);
 				break;
       case O_SPLINE:
 				printf("O_SPLINE\n");
 				display_object_splines(); // KAB remove after testing
-				// display_objects();
-				// list_delete_spline(&objects.splines, saved_objects.splines);
-				list_delete_spline(&objects.splines, active_object.splines);
-				redisplay_spline(active_object.splines);
-				active_object.splines = last_spline(objects.splines);
+				list_delete_spline(&objects.splines, saved_objects.splines);
+				redisplay_spline(saved_objects.splines);
+
+				saved_objects.splines = last_spline(objects.splines);
+				// list_delete_spline(&objects.splines, active_object.splines);
+				// redisplay_spline(active_object.splines);
+				// active_object.splines = last_spline(objects.splines);
 				// list_delete_spline(&objects.splines, last_spline(&objects.splines)));
 				display_object_splines(); // KAB remove after testing
-				// display_objects();
-				// redisplay_spline(saved_objects.splines);
-
 				break;
       case O_ARC:
 				printf("O_ARC\n");
-				// list_delete_arc(&objects.arcs, saved_objects.arcs);
-				list_delete_arc(&objects.arcs, active_object.arcs);
-				redisplay_arc(active_object.arcs);
-				active_object.arcs = last_arc(objects.arcs);
-				// redisplay_arc(saved_objects.arcs);
+				list_delete_arc(&objects.arcs, saved_objects.arcs);
+				redisplay_arc(saved_objects.arcs);
 
+				saved_objects.arcs = last_arc(objects.arcs);
+				// list_delete_arc(&objects.arcs, active_object.arcs);
+				// redisplay_arc(active_object.arcs);
+				// active_object.arcs = last_arc(objects.arcs);
 				break;
       case O_COMPOUND:
 				printf("O_COMPOUND\n");
-				// list_delete_compound(&objects.compounds, saved_objects.compounds);
-				list_delete_compound(&objects.compounds, active_object.compounds);
-				redisplay_compound(active_object.compounds);
-				active_object.compounds = last_compound(objects.compounds);
-				// redisplay_compound(saved_objects.compounds);
+				list_delete_compound(&objects.compounds, saved_objects.compounds);
+				redisplay_compound(saved_objects.compounds);
 
+				saved_objects.compounds = last_compound(objects.compounds);
+				// list_delete_compound(&objects.compounds, active_object.compounds);
+				// redisplay_compound(active_object.compounds);
+				// active_object.compounds = last_compound(objects.compounds);
 				break;
       case O_ALL_OBJECT:
 				printf("O_ALL_OBJECT\n");
@@ -846,107 +850,107 @@ void swap_newp_lastp(void)
 void clean_up(void)
 {
     if (last_action[0] == F_EDIT) {
-	switch (last_five_objects[0]) {
-	  case O_ARC:
-	    saved_objects.arcs->next = NULL;
-	    free_arc(&saved_objects.arcs);
-	    break;
-	  case O_COMPOUND:
-	    saved_objects.compounds->next = NULL;
-	    free_compound(&saved_objects.compounds);
-	    break;
-	  case O_ELLIPSE:
-	    saved_objects.ellipses->next = NULL;
-	    free_ellipse(&saved_objects.ellipses);
-	    break;
-	  case O_POLYLINE:
-	    saved_objects.lines->next = NULL;
-	    free_line(&saved_objects.lines);
-	    break;
-	  case O_SPLINE:
-		  printf("clean up spline\n");
-	    saved_objects.splines->next = NULL;
-	    free_spline(&saved_objects.splines);
-	    break;
-	  case O_TXT:
-	    saved_objects.texts->next = NULL;
-	    free_text(&saved_objects.texts);
-	    break;
-	  case O_FIGURE:
-	    free((char *) saved_objects.comments);
-	    break;
-	}
-} else if (last_action[0] == F_DELETE || last_action[0] == F_JOIN || last_action[0] == F_SPLIT) {
-	switch (last_five_objects[0]) {
-	  case O_ARC:
-	    free_arc(&saved_objects.arcs);
-	    break;
-	  case O_COMPOUND:
-	    free_compound(&saved_objects.compounds);
-	    break;
-	  case O_ELLIPSE:
-	    free_ellipse(&saved_objects.ellipses);
-	    break;
-	  case O_POLYLINE:
-	    free_line(&saved_objects.lines);
-	    break;
-	  case O_SPLINE:
-		  printf("Freeing Spline\n");
-	    free_spline(&saved_objects.splines);
-	    break;
-	  case O_TXT:
-	    free_text(&saved_objects.texts);
-	    break;
-	  case O_ALL_OBJECT:
-	    free_arc(&saved_objects.arcs);
-	    free_compound(&saved_objects.compounds);
-	    free_ellipse(&saved_objects.ellipses);
-	    free_line(&saved_objects.lines);
-	    free_spline(&saved_objects.splines);
-	    free_text(&saved_objects.texts);
-	    break;
-	}
-} else if (last_action[0] == F_DELETE_POINT || last_action[0] == F_ADD_POINT) {
-	if (last_action[0] == F_DELETE_POINT) {
-/**************************************************
-	    free((char *) last_selected_point);
-	    free((char *) last_selected_sfactor);
-**************************************************/
-	    last_next_point = NULL;
-	}
-	last_prev_point = NULL;
-	last_selected_point = NULL;
-	saved_objects.arcs = NULL;
-	saved_objects.compounds = NULL;
-	saved_objects.ellipses = NULL;
-	saved_objects.lines = NULL;
-	saved_objects.splines = NULL;
-	saved_objects.texts = NULL;
-} else if (last_action[0] == F_LOAD) {
-	free_arc(&saved_objects.arcs);
-	free_compound(&saved_objects.compounds);
-	free_ellipse(&saved_objects.ellipses);
-	free_line(&saved_objects.lines);
-	free_spline(&saved_objects.splines);
-	free_text(&saved_objects.texts);
-} else if (last_action[0] == F_GLUE) {
-	saved_objects.compounds = NULL;
-} else if (last_action[0] == F_BREAK) {
-	free((char *) saved_objects.compounds);
-	saved_objects.compounds = NULL;
-} else if (last_action[0] == F_ADD || last_action[0] == F_MOVE) {
-	saved_objects.arcs = NULL;
-	saved_objects.compounds = NULL;
-	saved_objects.ellipses = NULL;
-	saved_objects.lines = NULL;
-	saved_objects.splines = NULL;
-	saved_objects.texts = NULL;
-	free_linkinfo(&last_links);
-} else if (last_action[0] == F_CONVERT) {
-	if (last_five_objects[0] == O_POLYLINE)
-	    saved_objects.splines = NULL;
-	else
-	    saved_objects.lines = NULL;
+			// switch (last_five_objects[0]) {
+	  	// 	case O_ARC:
+	    // 		saved_objects.arcs->next = NULL;
+	    // 		free_arc(&saved_objects.arcs);
+	    // 		break;
+	  	// 	case O_COMPOUND:
+	    // 		saved_objects.compounds->next = NULL;
+	    // 		free_compound(&saved_objects.compounds);
+	    // 		break;
+	  	// 	case O_ELLIPSE:
+	    // 		saved_objects.ellipses->next = NULL;
+	    // 		free_ellipse(&saved_objects.ellipses);
+	    // 		break;
+	  	// 	case O_POLYLINE:
+	    // 		saved_objects.lines->next = NULL;
+	    // 		free_line(&saved_objects.lines);
+	    // 		break;
+	  	// 	case O_SPLINE:
+		  // 		printf("clean up spline\n");
+	    // 		saved_objects.splines->next = NULL;
+	    // 		free_spline(&saved_objects.splines);
+	    // 		break;
+	  	// 	case O_TXT:
+	    // 		saved_objects.texts->next = NULL;
+	    // 		free_text(&saved_objects.texts);
+	    // 		break;
+	  	// 	case O_FIGURE:
+	    // 		free((char *) saved_objects.comments);
+	    // 		break;
+			// }
+		} else if (last_action[0] == F_DELETE || last_action[0] == F_JOIN || last_action[0] == F_SPLIT) {
+			// switch (last_five_objects[0]) {
+	  	// 	case O_ARC:
+	    // 		free_arc(&saved_objects.arcs);
+	    // 		break;
+	  	// 	case O_COMPOUND:
+	    // 		free_compound(&saved_objects.compounds);
+	    // 		break;
+	  	// 	case O_ELLIPSE:
+	    // 		free_ellipse(&saved_objects.ellipses);
+	    // 		break;
+	  	// 	case O_POLYLINE:
+	    // 		free_line(&saved_objects.lines);
+	    // 		break;
+	  	// 	case O_SPLINE:
+		  // 		printf("Freeing Spline\n");
+	    // 		free_spline(&saved_objects.splines);
+	    // 		break;
+	  	// 	case O_TXT:
+	    // 		free_text(&saved_objects.texts);
+	    // 		break;
+	  	// 	case O_ALL_OBJECT:
+	    // 		free_arc(&saved_objects.arcs);
+	    // 		free_compound(&saved_objects.compounds);
+	    // 		free_ellipse(&saved_objects.ellipses);
+	    // 		free_line(&saved_objects.lines);
+	    // 		free_spline(&saved_objects.splines);
+	    // 		free_text(&saved_objects.texts);
+	    // 		break;
+			// }
+		} else if (last_action[0] == F_DELETE_POINT || last_action[0] == F_ADD_POINT) {
+			// if (last_action[0] == F_DELETE_POINT) {
+			// 	/**************************************************
+	    // 	free((char *) last_selected_point);
+	    // 	free((char *) last_selected_sfactor);
+			// 	**************************************************/
+	    // 	last_next_point = NULL;
+			// }
+			// last_prev_point = NULL;
+			// last_selected_point = NULL;
+			// saved_objects.arcs = NULL;
+			// saved_objects.compounds = NULL;
+			// saved_objects.ellipses = NULL;
+			// saved_objects.lines = NULL;
+			// saved_objects.splines = NULL;
+			// saved_objects.texts = NULL;
+		} else if (last_action[0] == F_LOAD) {
+			// free_arc(&saved_objects.arcs);
+			// free_compound(&saved_objects.compounds);
+			// free_ellipse(&saved_objects.ellipses);
+			// free_line(&saved_objects.lines);
+			// free_spline(&saved_objects.splines);
+			// free_text(&saved_objects.texts);
+		} else if (last_action[0] == F_GLUE) {
+			// saved_objects.compounds = NULL;
+		} else if (last_action[0] == F_BREAK) {
+			// free((char *) saved_objects.compounds);
+			// saved_objects.compounds = NULL;
+		} else if (last_action[0] == F_ADD || last_action[0] == F_MOVE) {
+			saved_objects.arcs = NULL;
+			saved_objects.compounds = NULL;
+			saved_objects.ellipses = NULL;
+			saved_objects.lines = NULL;
+			saved_objects.splines = NULL;
+			saved_objects.texts = NULL;
+			free_linkinfo(&last_links);
+		} else if (last_action[0] == F_CONVERT) {
+			if (last_five_objects[0] == O_POLYLINE)
+	    	saved_objects.splines = NULL;
+			else
+	    	saved_objects.lines = NULL;
     } else if (last_action[0] == F_OPEN_CLOSE) {
         saved_objects.splines = NULL;
         saved_objects.lines = NULL;
@@ -966,7 +970,8 @@ void clean_up(void)
 
 void set_latestarc(F_arc *arc)
 {
-    saved_objects.arcs = arc;
+	list_add_arc(&saved_objects.arcs, arc);
+    // saved_objects.arcs = arc;
 }
 
 void set_latestobjects(F_compound *objects)
@@ -976,17 +981,20 @@ void set_latestobjects(F_compound *objects)
 
 void set_latestcompound(F_compound *compound)
 {
-    saved_objects.compounds = compound;
+	list_add_compound(&saved_objects.compounds, compound);
+    // saved_objects.compounds = compound;
 }
 
 void set_latestellipse(F_ellipse *ellipse)
 {
-    saved_objects.ellipses = ellipse;
+	list_add_ellipse(&saved_objects.ellipses, ellipse);
+    // saved_objects.ellipses = ellipse;
 }
 
 void set_latestline(F_line *line)
 {
-    saved_objects.lines = line;
+	list_add_line(&saved_objects.lines, line);
+    // saved_objects.lines = line;
 }
 
 void set_latestspline(F_spline *spline)
@@ -997,7 +1005,8 @@ void set_latestspline(F_spline *spline)
 
 void set_latesttext(F_text *text)
 {
-    saved_objects.texts = text;
+	list_add_text(&saved_objects.texts, text);
+    // saved_objects.texts = text;
 }
 
 void set_last_prevpoint(F_point *prev_point)
