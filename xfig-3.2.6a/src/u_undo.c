@@ -73,19 +73,28 @@ F_arrow		*saved_back_arrow = (F_arrow *) NULL;
 F_line		*latest_line;		/* for undo_join (line) */
 F_spline	*latest_spline;		/* for undo_join (spline) */
 
+//----------------------- Modifications by Kyle Bielby -----------------------//
 // int		last_action = F_NULL
 
-// KAB pointer for last undone action of depth 5
-// KAB top of stack is index 0 and bottom of stack is index 4
+// top of stack is index 0 and bottom of stack is index 4
 int last_action[] = {F_NULL, F_NULL, F_NULL, F_NULL, F_NULL};
-// KAB redo action stack
+
+// redo action stack
 int redo_action_stack[] = {F_NULL, F_NULL, F_NULL, F_NULL, F_NULL};
 
-F_compound five_objects[5]; // F_compound object to store the last five objects
+// F_compound object to store the last five objects
+F_compound active_object = {0, 0, { 0, 0 }, { 0, 0 },
+				NULL, NULL, NULL, NULL, NULL, NULL, NULL};
+
+static int last_five_objects[5];  // NOTE not sure if this is needed
+
+F_spline last_spline_object;
+//----------------------- End Modifications by Kyle Bielby -------------------//
+
 
 /*************** LOCAL *****************/
 
-static int	last_object;  // KAB may need to change this to an int * for multiple objects
+static int	last_object;
 static F_pos	last_position, new_position;  // KAB may need to change this to an F_pos * for multiple positions
 static int	last_arcpointnum;
 static F_point *last_prev_point, *last_selected_point, *last_next_point;
@@ -119,9 +128,6 @@ undo(void)
 {
 
 	printf("undo function called\n");
-	printf("saved_objects.splines: %d\n", saved_objects.splines);
-	printf("objects.splines: %d\n", objects.splines);
-
 
     /* turn off Compose key LED */
     setCompLED(0);
@@ -129,41 +135,41 @@ undo(void)
     // switch (last_action) {
     switch (last_action[0]) {  // check action contained at the top of the stack
       case F_ADD:
-			printf("F_Add\n");
-	undo_add();
-	break;
+				printf("F_Add\n");
+				undo_add();
+				break;
       case F_DELETE:
-			printf("F_DELETE\n");
-	undo_delete();
-	break;
+				printf("F_DELETE\n");
+				undo_delete();
+				break;
       case F_MOVE:
-			printf("F_MOVE\n");
-	undo_move();
-	break;
+				printf("F_MOVE\n");
+				undo_move();
+				break;
       case F_EDIT:
-			printf("F_EDIT\n");
-	undo_change();
-	break;
+				printf("F_EDIT\n");
+				undo_change();
+				break;
       case F_GLUE:
-			printf("F_GLUE\n");
-	undo_glue();
-	break;
+				printf("F_GLUE\n");
+				undo_glue();
+				break;
       case F_BREAK:
-			printf("F_BREAK\n");
-	undo_break();
-	break;
+				printf("F_BREAK\n");
+				undo_break();
+				break;
       case F_LOAD:
-			printf("F_LOAD\n");
-	undo_load();
-	break;
+				printf("F_LOAD\n");
+				undo_load();
+				break;
       case F_SCALE:
-			printf("F_SCALE\n");
-	undo_scale();
-	break;
+				printf("F_SCALE\n");
+				undo_scale();
+				break;
       case F_ADD_POINT:
-			printf("F_ADD_POINT\n");
-	undo_addpoint();
-	break;
+				printf("F_ADD_POINT\n");
+				undo_addpoint();
+				break;
       case F_DELETE_POINT:
 			printf("F_DELETE_POINT\n");
 	undo_deletepoint();
@@ -194,11 +200,9 @@ undo(void)
 	return;
     }
 
-		printf("popping action from undo stack\n");
-		pop_undo_stack_action();
+		// printf("popping action from undo stack\n");
+		// pop_undo_stack_action();
 		printf("Undo Complete\n");
-		printf("saved_objects.splines: %d\n", saved_objects.splines);
-		printf("objects.splines: %d\n", objects.splines);
 
     put_msg("Undo complete");
 }
@@ -207,7 +211,7 @@ void undo_join_split(void)
 {
     F_line	    swp_l;
     F_spline	    swp_s;
-    if (last_object == O_POLYLINE) {
+    if (last_five_objects[0] == O_POLYLINE) {
 	new_l = saved_objects.lines;		/* the original */
 	old_l = latest_line;			/* the changed object */
 	/* swap old with new */
@@ -250,7 +254,7 @@ void undo_join_split(void)
 
 void undo_addpoint(void)
 {
-    if (last_object == O_POLYLINE)
+    if (last_five_objects[0] == O_POLYLINE)
 	linepoint_deleting(saved_objects.lines, last_prev_point,
 			   last_selected_point);
     else
@@ -263,13 +267,13 @@ void undo_deletepoint(void)
     // last_action = F_NULL;	/* to avoid doing a clean-up during adding */ // KAB not sure if I need to modify this
 		// pop_undo_stack_action(); // KAB added to pop last action
 
-    if (last_object == O_POLYLINE) {
+    if (last_five_objects[0] == O_POLYLINE) {
 	linepoint_adding(saved_objects.lines, last_prev_point,
 			 last_selected_point);
 	/* turn back on all relevant markers */
 	update_markers(new_objmask);
 
-    } else {	/* last_object is a spline */
+    } else {	/* last_five_objects[0] is a spline */
 	splinepoint_adding(saved_objects.splines, last_prev_point,
 			 last_selected_point, last_next_point,
 			 last_selected_sfactor->s);
@@ -307,7 +311,7 @@ void undo_glue(void)
 
 void undo_convert(void)
 {
-    switch (last_object) {
+    switch (last_five_objects[0]) {
       case O_POLYLINE:
 	if (saved_objects.lines->type == T_BOX ||
 	    saved_objects.lines->type == T_ARCBOX)
@@ -323,7 +327,7 @@ void undo_convert(void)
 
 void undo_add_arrowhead(void)
 {
-    switch (last_object) {
+    switch (last_five_objects[0]) {
       case O_POLYLINE:
 	delete_linearrow(saved_objects.lines,
 			 last_prev_point, last_selected_point);
@@ -344,7 +348,7 @@ void undo_add_arrowhead(void)
 
 void undo_delete_arrowhead(void)
 {
-    switch (last_object) {
+    switch (last_five_objects[0]) {
       case O_POLYLINE:
 	if (saved_for_arrow)
 	    saved_objects.lines->for_arrow = saved_for_arrow;
@@ -390,7 +394,7 @@ void undo_change(void)
 
     // last_action = F_NULL;	/* to avoid a clean-up during "unchange" */ // KAB
 		// pop_undo_stack_action();
-    switch (last_object) {
+    switch (last_five_objects[0]) {
       case O_POLYLINE:
 	new_l = saved_objects.lines;		/* the original */
 	old_l = saved_objects.lines->next;	/* the changed object */
@@ -541,47 +545,84 @@ void undo_change(void)
 
 void undo_add(void)
 {
-	printf("Undoing add\n");
+		printf("Undoing add\n");
     int		    xmin, ymin, xmax, ymax;
     char	    ctemp[PATH_MAX];
 
-    switch (last_object) {
+    switch (last_five_objects[0]) {
       case O_POLYLINE:
-			printf("POLYLINE\n");
-	list_delete_line(&objects.lines, saved_objects.lines);
-	redisplay_line(saved_objects.lines);
-	break;
+				printf("POLYLINE\n");
+				// list_delete_line(&objects.lines, saved_objects.lines);
+				display_lines();
+				list_delete_line(&objects.lines, active_object.lines);
+				display_lines();
+				redisplay_line(active_object.lines);
+				active_object.lines = last_line(objects.lines);
+				// redisplay_line(saved_objects.lines);
+
+				break;
       case O_ELLIPSE:
-	list_delete_ellipse(&objects.ellipses, saved_objects.ellipses);
-	redisplay_ellipse(saved_objects.ellipses);
-	break;
+				printf("O_ELLIPSE\n");
+				// list_delete_ellipse(&objects.ellipses, saved_objects.ellipses);
+				list_delete_ellipse(&objects.ellipses, active_object.ellipses);
+				redisplay_ellipse(active_object.ellipses);
+				active_object.ellipses = last_ellipse(objects.ellipses);
+				// redisplay_ellipse(saved_objects.ellipses);
+
+				break;
       case O_TXT:
-	list_delete_text(&objects.texts, saved_objects.texts);
-	redisplay_text(saved_objects.texts);
-	break;
+			  printf("O_TXT\n");
+				// list_delete_text(&objects.texts, saved_objects.texts);
+				list_delete_text(&objects.texts, active_object.texts);
+				redisplay_text(active_object.texts);
+				active_object.texts = last_text(objects.texts);
+				// redisplay_text(saved_objects.texts);
+
+				break;
       case O_SPLINE:
-			printf("SPLINE\n");
-			printf("saved_objects.splines: %d\n", &saved_objects.splines);
-	list_delete_spline(&objects.splines, saved_objects.splines);
-	redisplay_spline(saved_objects.splines);
-	break;
+				printf("O_SPLINE\n");
+				display_object_splines(); // KAB remove after testing
+				// display_objects();
+				// list_delete_spline(&objects.splines, saved_objects.splines);
+				list_delete_spline(&objects.splines, active_object.splines);
+				redisplay_spline(active_object.splines);
+				active_object.splines = last_spline(objects.splines);
+				// list_delete_spline(&objects.splines, last_spline(&objects.splines)));
+				display_object_splines(); // KAB remove after testing
+				// display_objects();
+				// redisplay_spline(saved_objects.splines);
+
+				break;
       case O_ARC:
-	list_delete_arc(&objects.arcs, saved_objects.arcs);
-	redisplay_arc(saved_objects.arcs);
-	break;
+				printf("O_ARC\n");
+				// list_delete_arc(&objects.arcs, saved_objects.arcs);
+				list_delete_arc(&objects.arcs, active_object.arcs);
+				redisplay_arc(active_object.arcs);
+				active_object.arcs = last_arc(objects.arcs);
+				// redisplay_arc(saved_objects.arcs);
+
+				break;
       case O_COMPOUND:
-	list_delete_compound(&objects.compounds, saved_objects.compounds);
-	redisplay_compound(saved_objects.compounds);
-	break;
+				printf("O_COMPOUND\n");
+				// list_delete_compound(&objects.compounds, saved_objects.compounds);
+				list_delete_compound(&objects.compounds, active_object.compounds);
+				redisplay_compound(active_object.compounds);
+				active_object.compounds = last_compound(objects.compounds);
+				// redisplay_compound(saved_objects.compounds);
+
+				break;
       case O_ALL_OBJECT:
-	cut_objects(&objects, &object_tails);
-	compound_bound(&saved_objects, &xmin, &ymin, &xmax, &ymax);
-	redisplay_zoomed_region(xmin, ymin, xmax, ymax);
-	break;
+				printf("O_ALL_OBJECT\n");
+				// TODO not sure how to handle this object
+				cut_objects(&objects, &object_tails);
+				compound_bound(&saved_objects, &xmin, &ymin, &xmax, &ymax);
+				redisplay_zoomed_region(xmin, ymin, xmax, ymax);
+				break;
     }
 
     // last_action = F_DELETE;
-		// pop_undo_stack_action();
+		pop_undo_stack_action();
+		pop_last_object();
 }
 
 void undo_delete(void)
@@ -591,7 +632,7 @@ void undo_delete(void)
     int		    xmin, ymin, xmax, ymax;
     char	    ctemp[PATH_MAX];
 
-    switch (last_object) {
+    switch (last_five_objects[0]) {
       case O_POLYLINE:
 	list_add_line(&objects.lines, saved_objects.lines);
 	redisplay_line(saved_objects.lines);
@@ -650,7 +691,7 @@ void undo_move(void)
 
     dx = last_position.x - new_position.x;
     dy = last_position.y - new_position.y;
-    switch (last_object) {
+    switch (last_five_objects[0]) {
       case O_POLYLINE:
 	line_bound(saved_objects.lines, &xmin1, &ymin1, &xmax1, &ymax1);
 	translate_line(saved_objects.lines, dx, dy);
@@ -747,7 +788,7 @@ void undo_scale(void)
 
 void undo_open_close(void)
 {
-  switch (last_object) {
+  switch (last_five_objects[0]) {
   case O_POLYLINE:
     if (saved_objects.lines->type == T_POLYGON) {
 	saved_objects.lines->for_arrow = last_for_arrow;
@@ -805,7 +846,7 @@ void swap_newp_lastp(void)
 void clean_up(void)
 {
     if (last_action[0] == F_EDIT) {
-	switch (last_object) {
+	switch (last_five_objects[0]) {
 	  case O_ARC:
 	    saved_objects.arcs->next = NULL;
 	    free_arc(&saved_objects.arcs);
@@ -836,7 +877,7 @@ void clean_up(void)
 	    break;
 	}
 } else if (last_action[0] == F_DELETE || last_action[0] == F_JOIN || last_action[0] == F_SPLIT) {
-	switch (last_object) {
+	switch (last_five_objects[0]) {
 	  case O_ARC:
 	    free_arc(&saved_objects.arcs);
 	    break;
@@ -902,7 +943,7 @@ void clean_up(void)
 	saved_objects.texts = NULL;
 	free_linkinfo(&last_links);
 } else if (last_action[0] == F_CONVERT) {
-	if (last_object == O_POLYLINE)
+	if (last_five_objects[0] == O_POLYLINE)
 	    saved_objects.splines = NULL;
 	else
 	    saved_objects.lines = NULL;
@@ -950,7 +991,8 @@ void set_latestline(F_line *line)
 
 void set_latestspline(F_spline *spline)
 {
-    saved_objects.splines = spline;
+	list_add_spline(&saved_objects.splines, spline);
+    // saved_objects.splines = spline;
 }
 
 void set_latesttext(F_text *text)
@@ -1007,7 +1049,8 @@ void set_action_object(int action, int object)
     // last_action = action;
 		printf("set_action_object\n");
 		push_undo_stack_action(action);
-    last_object = object;
+		push_new_object(object);
+    // last_object = object;
 }
 
 void set_lastlinkinfo(int mode, F_linkinfo *links)
@@ -1028,15 +1071,15 @@ void set_last_arrows(F_arrow *forward, F_arrow *backward)
       last_back_arrow = backward;
 }
 
-////////////////////// Functions Added by Kyle Bielby //////////////////////////
+//-------------------- Functions Added by Kyle Bielby ------------------------//
 // pop the last action from the undo action stack
 void pop_undo_stack_action()
 {
 	printf("popping undo\n");
-	printf("Displaying undo aciton stack:\n");
+	// printf("Displaying undo aciton stack:\n");
 	for(int i = 0; i < 5; i ++)
 	{
-		printf("last_action[%d] = %d\n", i, last_action[i]);
+		// printf("last_action[%d] = %d\n", i, last_action[i]);
     if(i != 4)
 		{
 			last_action[i] = last_action[i + 1];  // move stack actions up by index 1
@@ -1050,9 +1093,9 @@ void pop_undo_stack_action()
 // push the given action onto the undo action stack
 void push_undo_stack_action(int action) {
 	printf("pushing undo\n");
-	printf("Displaying undo aciton stack:\n");
+	// printf("Displaying undo aciton stack:\n");
 	for(int index = 4; index >= 0; index--) {
-		printf("last_action[%d] = %d\n", index, last_action[index]);
+		// printf("last_action[%d] = %d\n", index, last_action[index]);
 		if (index == 0) {
 			last_action[0] = action;
 		}
@@ -1091,38 +1134,81 @@ void push_redo_stack_action(int action) {
   }
 }
 
-void push_new_object(F_compound new_object)
+void push_new_object(int new_object)
 {
 	printf("pushing object\n");
-	printf("Displaying object stack:\n");
+	// printf("Displaying object stack:\n");
 	for(int index = 4; index >= 0; index--) {
-		printf("five_objects[%d] = %d\n", index, five_objects[index]);
+		// printf("last_five_objects[%d] = %d\n", index, last_five_objects[index]);
 		if (index == 0) {
-			five_objects[0] = new_object;
+			last_five_objects[0] = new_object;
 		}
 		else{
-			five_objects[index] = five_objects[index - 1];
+			last_five_objects[index] = last_five_objects[index - 1];
 		}
   }
 }
 
 void pop_last_object()
 {
-	F_compound empty_object = {0, 0, { 0, 0 }, { 0, 0 },
-					NULL, NULL, NULL, NULL, NULL, NULL, NULL};
 	printf("popping object\n");
-	printf("Displaying object stack:\n");
+	// printf("Displaying object stack:\n");
 	for(int i = 0; i < 5; i++)
 	{
-		printf("five_objects[%d] = %d\n", i, five_objects[i]);
+		// printf("last_five_objects[%d] = %d\n", i, last_five_objects[i]);
 		if(i != 4)
 		{
-			five_objects[i] = five_objects[i + 1];  // move stack actions up by index 1
+			last_five_objects[i] = last_five_objects[i + 1];  // move stack actions up by index 1
 		}
 		else if(i == 4) {
-			five_objects[4] = empty_object; // set last element in action stack to null
+			last_five_objects[4] = NULL; // set last element in action stack to null
 		}
 	}
 }
 
-////////////////// End Functions Added by Kyle Bielby //////////////////////////
+void set_last_spline_object() {
+	F_spline **head = &objects.splines;
+	F_spline *this_head = *head;
+
+	while(this_head->next != NULL) {
+		this_head = this_head->next;
+	}
+
+	last_spline_object = *this_head;
+}
+
+// void set_last_spline() {
+// 	f_spline * current_spline;
+// 	f_spline * previous_spline;
+// }
+
+void display_object_splines() {
+	F_spline **head = &objects.splines;
+	F_spline *this_head = *head;
+
+	while(this_head != NULL) {
+		printf("Spline: %d\n", this_head);
+		this_head = this_head->next;
+	}
+}
+
+void display_objects() {
+	F_compound * head = &objects;
+
+	while(head->next != NULL) {
+		printf("Object: %d\n", head);
+		head = head->next;
+	}
+}
+
+void display_lines() {
+	printf("HELLO\n");
+	F_line **head = &objects.lines;
+	F_line *this_head = *head;
+
+	while(this_head != NULL) {
+		printf("Line: %d\n", this_head);
+		this_head = this_head->next;
+	}
+}
+//---------------- End Functions Added by Kyle Bielby ------------------------//
