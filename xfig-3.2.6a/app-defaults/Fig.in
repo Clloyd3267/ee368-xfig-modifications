@@ -460,7 +460,7 @@ Fig*mode_panel*accelerators: \
 	Shift<Key>b: ModeArcBox() \n\
 	<Key>b: ModeBox() \n\
 	Ctrl<Key>c: ModeCopyObject() \n\
-	Shift<Key>c: ModeEllipseD() \n\
+	Ctrl<Key>q: ModeEllipseD() \n\
 	<Key>c: ModeEllipseR() \n\
 	Shift<Key>d: ModeDeletePoint() \n\
 	<Key>d: ModeDeleteObject() \n\
