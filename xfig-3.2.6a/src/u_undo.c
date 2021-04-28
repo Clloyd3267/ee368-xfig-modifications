@@ -334,20 +334,19 @@ void undo_add_arrowhead(void)
 {
     switch (last_five_objects[0]) {
       case O_POLYLINE:
-	delete_linearrow(saved_objects.lines,
-			 last_prev_point, last_selected_point);
-	break;
+				delete_linearrow(saved_objects.lines, last_prev_point, last_selected_point);
+				break;
       case O_SPLINE:
-	delete_splinearrow(saved_objects.splines,
-			   last_prev_point, last_selected_point);
-	break;
+
+				delete_splinearrow(saved_objects.splines,
+			  last_prev_point, last_selected_point);
+				break;
       case O_ARC:
-	delete_arcarrow(saved_objects.arcs, last_arcpointnum);
-	break;
+				delete_arcarrow(saved_objects.arcs, last_arcpointnum);
+				break;
       default:
-	return;
+				return;
     }
-    // last_action = F_DELETE_ARROW_HEAD; // KAB
 		// pop_undo_stack_action();
 }
 
@@ -355,31 +354,29 @@ void undo_delete_arrowhead(void)
 {
     switch (last_five_objects[0]) {
       case O_POLYLINE:
-	if (saved_for_arrow)
-	    saved_objects.lines->for_arrow = saved_for_arrow;
-	if (saved_back_arrow)
-	    saved_objects.lines->back_arrow = saved_back_arrow;
-	redisplay_line(saved_objects.lines);
-	break;
+				if (saved_for_arrow)
+	    		saved_objects.lines->for_arrow = saved_for_arrow;
+				if (saved_back_arrow)
+	    		saved_objects.lines->back_arrow = saved_back_arrow;
+				redisplay_line(saved_objects.lines);
+				break;
       case O_SPLINE:
-	if (saved_for_arrow)
-	    saved_objects.splines->for_arrow = saved_for_arrow;
-	if (saved_back_arrow)
-	    saved_objects.splines->back_arrow = saved_back_arrow;
-	redisplay_spline(saved_objects.splines);
-	break;
+				if (saved_for_arrow)
+	    		saved_objects.splines->for_arrow = saved_for_arrow;
+				if (saved_back_arrow)
+	    		saved_objects.splines->back_arrow = saved_back_arrow;
+				redisplay_spline(saved_objects.splines);
+				break;
       case O_ARC:
-	if (saved_for_arrow)
-	    saved_objects.arcs->for_arrow = saved_for_arrow;
-	if (saved_back_arrow)
-	    saved_objects.arcs->back_arrow = saved_back_arrow;
-	redisplay_arc(saved_objects.arcs);
-	break;
+				if (saved_for_arrow)
+	    		saved_objects.arcs->for_arrow = saved_for_arrow;
+				if (saved_back_arrow)
+	    		saved_objects.arcs->back_arrow = saved_back_arrow;
+				redisplay_arc(saved_objects.arcs);
+				break;
       default:
-	return;
+				return;
     }
-    // last_action = F_ADD_ARROW_HEAD; // KAB
-		// pop_undo_stack_action();
 }
 
 /*
@@ -401,96 +398,96 @@ void undo_change(void)
 		// pop_undo_stack_action();
     switch (last_five_objects[0]) {
       case O_POLYLINE:
-	new_l = saved_objects.lines;		/* the original */
-	old_l = saved_objects.lines->next;	/* the changed object */
-	/* account for depths */
-	remove_depth(O_POLYLINE, old_l->depth);
-	add_depth(O_POLYLINE, new_l->depth);
-	/* swap old with new */
-	bcopy((char*)old_l, (char*)&swp_l, sizeof(F_line));
-	bcopy((char*)new_l, (char*)old_l, sizeof(F_line));
-	bcopy((char*)&swp_l, (char*)new_l, sizeof(F_line));
-	/* but keep the next pointers unchanged */
-	swp_l.next = old_l->next;
-	old_l->next = new_l->next;
-	new_l->next = swp_l.next;
-	printf("undo_change \n");
-	set_action_object(F_EDIT, O_POLYLINE);
-	redisplay_lines(new_l, old_l);
-	break;
+				new_l = saved_objects.lines;		/* the original */
+				old_l = saved_objects.lines->next;	/* the changed object */
+				/* account for depths */
+				remove_depth(O_POLYLINE, old_l->depth);
+				add_depth(O_POLYLINE, new_l->depth);
+				/* swap old with new */
+				bcopy((char*)old_l, (char*)&swp_l, sizeof(F_line));
+				bcopy((char*)new_l, (char*)old_l, sizeof(F_line));
+				bcopy((char*)&swp_l, (char*)new_l, sizeof(F_line));
+				/* but keep the next pointers unchanged */
+				swp_l.next = old_l->next;
+				old_l->next = new_l->next;
+				new_l->next = swp_l.next;
+				printf("undo_change \n");
+				set_action_object(F_EDIT, O_POLYLINE);
+				redisplay_lines(new_l, old_l);
+				break;
       case O_ELLIPSE:
-	new_e = saved_objects.ellipses;
-	old_e = saved_objects.ellipses->next;
-	/* account for depths */
-	remove_depth(O_ELLIPSE, old_e->depth);
-	add_depth(O_ELLIPSE, new_e->depth);
-	/* swap old with new */
-	bcopy((char*)old_e, (char*)&swp_e, sizeof(F_ellipse));
-	bcopy((char*)new_e, (char*)old_e, sizeof(F_ellipse));
-	bcopy((char*)&swp_e, (char*)new_e, sizeof(F_ellipse));
-	/* but keep the next pointers unchanged */
-	swp_e.next = old_e->next;
-	old_e->next = new_e->next;
-	new_e->next = swp_e.next;
-	printf("undo_change edit ellipse\n");
-	set_action_object(F_EDIT, O_ELLIPSE);
-	redisplay_ellipses(new_e, old_e);
-	break;
+				new_e = saved_objects.ellipses;
+				old_e = saved_objects.ellipses->next;
+				/* account for depths */
+				remove_depth(O_ELLIPSE, old_e->depth);
+				add_depth(O_ELLIPSE, new_e->depth);
+				/* swap old with new */
+				bcopy((char*)old_e, (char*)&swp_e, sizeof(F_ellipse));
+				bcopy((char*)new_e, (char*)old_e, sizeof(F_ellipse));
+				bcopy((char*)&swp_e, (char*)new_e, sizeof(F_ellipse));
+				/* but keep the next pointers unchanged */
+				swp_e.next = old_e->next;
+				old_e->next = new_e->next;
+				new_e->next = swp_e.next;
+				printf("undo_change edit ellipse\n");
+				set_action_object(F_EDIT, O_ELLIPSE);
+				redisplay_ellipses(new_e, old_e);
+				break;
       case O_TXT:
-	new_t = saved_objects.texts;
-	old_t = saved_objects.texts->next;
-	/* account for depths */
-	remove_depth(O_TXT, old_t->depth);
-	add_depth(O_TXT, new_t->depth);
-	/* swap old with new */
-	bcopy((char*)old_t, (char*)&swp_t, sizeof(F_text));
-	bcopy((char*)new_t, (char*)old_t, sizeof(F_text));
-	bcopy((char*)&swp_t, (char*)new_t, sizeof(F_text));
-	/* but keep the next pointers unchanged */
-	swp_t.next = old_t->next;
-	old_t->next = new_t->next;
-	new_t->next = swp_t.next;
-	printf("undo_change edit text\n");
-	set_action_object(F_EDIT, O_TXT);
-	redisplay_texts(new_t, old_t);
-	break;
+				new_t = saved_objects.texts;
+				old_t = saved_objects.texts->next;
+				/* account for depths */
+				remove_depth(O_TXT, old_t->depth);
+				add_depth(O_TXT, new_t->depth);
+				/* swap old with new */
+				bcopy((char*)old_t, (char*)&swp_t, sizeof(F_text));
+				bcopy((char*)new_t, (char*)old_t, sizeof(F_text));
+				bcopy((char*)&swp_t, (char*)new_t, sizeof(F_text));
+				/* but keep the next pointers unchanged */
+				swp_t.next = old_t->next;
+				old_t->next = new_t->next;
+				new_t->next = swp_t.next;
+				printf("undo_change edit text\n");
+				set_action_object(F_EDIT, O_TXT);
+				redisplay_texts(new_t, old_t);
+				break;
       case O_SPLINE:
-	new_s = saved_objects.splines;
-	old_s = saved_objects.splines->next;
-	/* account for depths */
-	printf("removing depths\n");
-	remove_depth(O_SPLINE, old_s->depth);
-	add_depth(O_SPLINE, new_s->depth);
-	/* swap old with new */
-	bcopy((char*)old_s, (char*)&swp_s, sizeof(F_spline));
-	bcopy((char*)new_s, (char*)old_s, sizeof(F_spline));
-	bcopy((char*)&swp_s, (char*)new_s, sizeof(F_spline));
-	/* but keep the next pointers unchanged */
-	swp_s.next = old_s->next;
-	old_s->next = new_s->next;
-	new_s->next = swp_s.next;
-	printf("undo_chagne edit spline\n");
-	set_action_object(F_EDIT, O_SPLINE);
-	redisplay_splines(new_s, old_s);
-	break;
+				new_s = saved_objects.splines;
+				old_s = saved_objects.splines->next;
+				/* account for depths */
+				printf("removing depths\n");
+				remove_depth(O_SPLINE, old_s->depth);
+				add_depth(O_SPLINE, new_s->depth);
+				/* swap old with new */
+				bcopy((char*)old_s, (char*)&swp_s, sizeof(F_spline));
+				bcopy((char*)new_s, (char*)old_s, sizeof(F_spline));
+				bcopy((char*)&swp_s, (char*)new_s, sizeof(F_spline));
+				/* but keep the next pointers unchanged */
+				swp_s.next = old_s->next;
+				old_s->next = new_s->next;
+				new_s->next = swp_s.next;
+				printf("undo_chagne edit spline\n");
+				set_action_object(F_EDIT, O_SPLINE);
+				redisplay_splines(new_s, old_s);
+				break;
       case O_ARC:
-	new_a = saved_objects.arcs;
-	old_a = saved_objects.arcs->next;
-	/* account for depths */
-	remove_depth(O_ARC, old_a->depth);
-	add_depth(O_ARC, new_a->depth);
-	/* swap old with new */
-	bcopy((char*)old_a, (char*)&swp_a, sizeof(F_arc));
-	bcopy((char*)new_a, (char*)old_a, sizeof(F_arc));
-	bcopy((char*)&swp_a, (char*)new_a, sizeof(F_arc));
-	/* but keep the next pointers unchanged */
-	swp_a.next = old_a->next;
-	old_a->next = new_a->next;
-	new_a->next = swp_a.next;
-	printf("undo_chagne edit arc\n");
-	set_action_object(F_EDIT, O_ARC);
-	redisplay_arcs(new_a, old_a);
-	break;
+				new_a = saved_objects.arcs;
+				old_a = saved_objects.arcs->next;
+				/* account for depths */
+				remove_depth(O_ARC, old_a->depth);
+				add_depth(O_ARC, new_a->depth);
+				/* swap old with new */
+				bcopy((char*)old_a, (char*)&swp_a, sizeof(F_arc));
+				bcopy((char*)new_a, (char*)old_a, sizeof(F_arc));
+				bcopy((char*)&swp_a, (char*)new_a, sizeof(F_arc));
+				/* but keep the next pointers unchanged */
+				swp_a.next = old_a->next;
+				old_a->next = new_a->next;
+				new_a->next = swp_a.next;
+				printf("undo_chagne edit arc\n");
+				set_action_object(F_EDIT, O_ARC);
+				redisplay_arcs(new_a, old_a);
+				break;
       case O_COMPOUND:
 	new_c = saved_objects.compounds;
 	old_c = saved_objects.compounds->next;
