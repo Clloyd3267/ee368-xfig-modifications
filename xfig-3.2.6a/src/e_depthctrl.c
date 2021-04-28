@@ -69,13 +69,15 @@ void bringtofront(F_line *p, int type)
         }
         else if ((get_min_depth() == 0) & (p->depth != 0)) // lower bound protection
         {
+            put_msg("Depth 0 ocupied, moving object anyway");
             p->depth = 0;
             add_depth(type, p->depth);
             remove_depth(type, old);
+
         }
-        else
+        else //already in depth 0, do nothing
         {
-            put_msg("Depth 0 ocupied, moving object anyway");
+            put_msg("Object already in depth 0");
         }
     }
     
@@ -96,7 +98,11 @@ void sendtoback(F_line* p, int type)
         }
         else //edge case
         {
-            offset = 999 - maxc;
+            if (get_max_depth() == 999)
+            {
+                put_message("Depth 999 already occupied, Compound object moved to have max depth of 999");
+            }
+                offset = 999 - maxc;
         }
         F_compound* c_old = copy_compound(p);
         offset_compound_depth(p, offset);
@@ -112,15 +118,16 @@ void sendtoback(F_line* p, int type)
             add_depth(type, p->depth);
             remove_depth(type, old);
         }
-        else if ((get_min_depth() == 999) & (p->depth != 999)) // lower bound protection
+        else if ((get_max_depth() == 999) & (p->depth != 999)) // lower bound protection
         {
+            put_msg("Depth 999 ocupied, moving object anyway");
             p->depth = 999;
             add_depth(type, p->depth);
             remove_depth(type, old);
         }
-        else
+        else //faster for do nothing case
         {
-            put_msg("Depth 999 ocupied, moving object anyway");
+            put_msg("Object already in depth 999");
         }
     }
     redisplay_object(p, type);
