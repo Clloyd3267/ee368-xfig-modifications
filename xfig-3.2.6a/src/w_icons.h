@@ -126,6 +126,7 @@ extern icon_struct	tangent_ic;
 extern icon_struct	anglemeas_ic;
 extern icon_struct	lenmeas_ic;
 extern icon_struct	areameas_ic;
+extern icon_struct  depthctrl_ic;
 
 /* misc icons */
 
