@@ -45,6 +45,7 @@ extern struct driver dev_ge;
 extern struct driver dev_bitmaps;
 extern struct driver dev_map;
 extern struct driver dev_svg;
+extern struct driver dev_vdx;
 extern struct driver dev_gbx;
 extern struct driver dev_shape;
 
@@ -91,6 +92,7 @@ struct {
 	{"shape",	&dev_shape},
 	{"sld",		&dev_bitmaps},
 	{"svg",		&dev_svg},
+	{"vdx",		&dev_vdx},
 	{"textyl",	&dev_textyl},
 	{"tiff",	&dev_bitmaps},
 	{"tikz",	&dev_tikz},
