@@ -79,7 +79,7 @@
 #define		F_AREAMEAS		60
 #define		F_PASTE			61
 #define		F_CHOP			62
-
+#define     F_DEPTHCTRL     63
 extern int	cur_mode;
 
 /* alignment mode */
@@ -234,6 +234,7 @@ enum {
 	LANG_TK,
 	LANG_SHAPE,	/* ShapePar definition */
 	LANG_SVG,
+	LANG_VDX,
 /* bitmap formats should follow here, starting with GIF */
 	LANG_GIF,
 	LANG_JPEG,

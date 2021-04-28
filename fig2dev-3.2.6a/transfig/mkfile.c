@@ -74,6 +74,7 @@ makefile(FILE *mk, int altfonts, argument *arg_list)
 	  case ptk:
 	  case sld:
 	  case svg:
+	  case vdx:
 	  case textyl:
 	  case tiff:
 	  case tk:

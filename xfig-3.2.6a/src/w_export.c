@@ -287,6 +287,8 @@ do_export(Widget w)
 	    else if (cur_exp_lang==LANG_PDFTEX)
 		/* for pdftex, just use .pdf */
 		sprintf(default_export_file,"NoName.pdf");
+	    else if (cur_exp_lang==LANG_VDX)
+		sprintf(default_export_file,"NoName.vdx");
 	    else
 		sprintf(default_export_file,"NoName.%s",lang_items[cur_exp_lang]);
 	}
@@ -532,6 +534,8 @@ void set_export_mask(int lang)
 	     cur_exp_lang == LANG_EPS_COLOR_TIFF)
 	/* just .eps for all eps files */
 	strcpy(mask, "*.eps");
+    else if (cur_exp_lang == LANG_VDX)
+	strcpy(mask, "*.vdx");
     else
 	sprintf(mask,"*.%s",lang_items[lang]);
     FirstArg(XtNstring, mask);
@@ -1838,6 +1842,8 @@ void update_def_filename(void)
 	else if (cur_exp_lang==LANG_PSPDF)
 	    /* for pspdf, start with just .eps */
 	    strcat(default_export_file, ".eps");
+	else if (cur_exp_lang==LANG_VDX)
+	    strcat(default_export_file, ".vdx");
 	else {
 	    strcat(default_export_file, ".");
 	    strcat(default_export_file, lang_items[cur_exp_lang]);

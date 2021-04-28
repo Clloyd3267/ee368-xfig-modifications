@@ -1,6 +1,6 @@
 '\" t -*- coding: LATIN-1 -*-
-.\" @configure_input@
-.TH fig2dev 1 "@RELEASE_DATE@" "Version @PACKAGE_VERSION@"
+.\" man/fig2dev.1.  Generated from fig2dev.1.in by configure.
+.TH fig2dev 1 "Jan 2017" "Version 3.2.6a"
 .SH NAME
 fig2dev \- translates Fig code to various graphics languages
 
@@ -123,7 +123,9 @@ Allowable units are: i, in, inch, f, ft, feet, c, cm, mm, and m.
 .B Only allowed for PostScript, EPS, PDF, and bitmap (GIF, JPEG, etc)
 .B drivers for now.
 
-@i18nman@
+.TP
+.B \-j
+Enable the I18N internationalization facility.
 
 .TP
 .B "\-m mag"
@@ -240,8 +242,8 @@ The output to DXF is experimental.
 
 .TP
 .B \-a
-Select @ALTERNATE_PAPERSIZE@ paper size instead of the
-default @DEFAULT_PAPERSIZE@.
+Select ANSI A paper size instead of the
+default ISO A4.
 
 .TP
 .B "\-d xll,yll,xur,yur"
@@ -297,7 +299,16 @@ TeX arrowheads.
 Set encoding for text translation (0 = none, 1 = ISO-8859-1, 2 = ISO-8859-2;
 default 1).
 
-@nfssman@
+.TP
+.B \-F
+Don't set the font face, series, and style; only set it's size and the
+baselineskip. By default, fig2dev sets all 5 font parameters when it
+puts some text. The disadvantage is that you can't set the font from your
+LaTeX document. With this option on, you can set the font from your LaTeX
+document.
+.IP
+If any of the pictures included in your LaTeX document has been generated
+with \fB\-F\fR, then all pictures must be generated with this option.
 
 .TP
 .B "\-f font"
@@ -375,13 +386,13 @@ with HP-GL (Hewlett-Packard Graphics Language).
 
 .TP
 .B \-a
-Select @ALTERNATE_PAPERSIZE@ paper size instead of the
-default @DEFAULT_PAPERSIZE@.
+Select ANSI A paper size instead of the
+default ISO A4.
 
 .TP
 .B \-c
 Generate instructions for an IBM 6180 Color Plotter
-@WITH_IBMGEC@ an IBM Graphics Enhancement Cartridge (IBM-GEC).
+without an IBM Graphics Enhancement Cartridge (IBM-GEC).
 
 .TP
 .B \-d xll,yll,xur,yur
@@ -486,7 +497,16 @@ Set a separate magnification for the length of line dashes to \fIdmag\fR.
 Set encoding for latex text translation
 (0 = no translation, 1 = ISO-8859-1, 2 = ISO-8859-2; default 1).
 
-@nfssman@
+.TP
+.B \-F
+Don't set the font face, series, and style; only set it's size and the
+baselineskip. By default, fig2dev sets all 5 font parameters when it
+puts some text. The disadvantage is that you can't set the font from your
+LaTeX document. With this option on, you can set the font from your LaTeX
+document.
+.IP
+If any of the pictures included in your LaTeX document has been generated
+with \fB\-F\fR, then all pictures must be generated with this option.
 
 .TP
 .B \-f font
@@ -1528,7 +1548,7 @@ The string \fIfont\fR can be one of
 .SH BUGS and RESTRICTIONS
 Please send bug reports, fixes, new features etc. to:
 .br
-\&@PACKAGE_BUGREPORT@
+\&thomas.loimer@tuwien.ac.at
 .\"xfig-bugs@epb1.lbl.gov (Brian V. Smith)
 .PP
 Arc-boxes are not supported for the tk output language, and only X bitmap pictures
