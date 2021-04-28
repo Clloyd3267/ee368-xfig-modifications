@@ -40,13 +40,13 @@ libdrivers_a_SOURCES = asc85ec.c genbitmaps.c genbox.c gencgm.c gendxf.c \
     genemf.h genemf.c genepic.c gengbx.c genge.c genibmgl.c genlatex.h \
     genlatex.c genmap.c genmf.c genmp.c genpdf.c genpic.c genpict2e.c \
     genpictex.c genps.c genps.h genpstex.c genpstricks.c genptk.c genshape.c \
-    gensvg.c gentextyl.c gentikz.h gentikz.c gentk.c tpicfonts.h gentpic.c \
+    gensvg.c genvdx.c gentextyl.c gentikz.h gentikz.c gentk.c tpicfonts.h gentpic.c \
     picfonts.h picpsfonts.h psencode.h psencode.c psfonts.h psimage.h \
     psprolog.h readeps.c readgif.c readjpg.c readpcx.c readpics.c readppm.c \
     readtif.c readxbm.c texfonts.h setfigfont.h setfigfont.c
 
 # These contain PACKAGE_VERSION, hence depend on $(CONFIG_HEADER) = config.h.
-genps.o gensvg.o genemf.o gengbx.o genmp.o genpictex.o gentk.o: $(CONFIG_HEADER)
+genps.o gensvg.o genvdx.o genemf.o gengbx.o genmp.o genpictex.o gentk.o: $(CONFIG_HEADER)
 
 if WITH_PNG
 libdrivers_a_SOURCES += readpng.c
