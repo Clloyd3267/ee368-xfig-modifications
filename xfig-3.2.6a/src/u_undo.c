@@ -89,6 +89,14 @@ F_compound active_object = {0, 0, { 0, 0 }, { 0, 0 },
 static int last_five_objects[5];  // NOTE not sure if this is needed
 
 F_spline last_spline_object;
+
+F_spline * nextSavedSpline;
+F_ellipse * nextSavedEllipse;
+F_line * nextSavedLine;
+F_text * nextSavedText;
+F_arc * nextSavedArc;
+F_compound * nextSavedCompound;
+
 //----------------------- End Modifications by Kyle Bielby -------------------//
 
 
@@ -209,46 +217,43 @@ undo(void)
 
 void undo_join_split(void)
 {
+	printf("undo_join_split\n");
     F_line	    swp_l;
     F_spline	    swp_s;
     if (last_five_objects[0] == O_POLYLINE) {
-	new_l = saved_objects.lines;		/* the original */
-	old_l = latest_line;			/* the changed object */
-	/* swap old with new */
-	bcopy((char*)old_l, (char*)&swp_l, sizeof(F_line));
-	bcopy((char*)new_l, (char*)old_l, sizeof(F_line));
-	bcopy((char*)&swp_l, (char*)new_l, sizeof(F_line));
-	/* this assumes that the object are at the end of the objects list */
-	/* correct the depth counts if necessary */
-	if (!new_l->next && old_l->next){ /* join undo */
-          add_depth(O_POLYLINE, old_l->next->depth);
-        }
-	else if (new_l->next && !old_l->next){ /* split undo */
-          remove_depth(O_POLYLINE, new_l->next->depth);
-        }
-	printf("caling set action object undo_join_split\n");
-	set_action_object(F_JOIN, O_POLYLINE);
-	redisplay_lines(new_l, old_l);
-    } else {
-	new_s = saved_objects.splines;		/* the original */
-	old_s = latest_spline;			/* the changed object */
-	/* swap old with new */
-	bcopy((char*)old_s, (char*)&swp_s, sizeof(F_spline));
-	bcopy((char*)new_s, (char*)old_s, sizeof(F_spline));
-	bcopy((char*)&swp_s, (char*)new_s, sizeof(F_spline));
-	/* this assumes that the object are at the end of the objects list */
-	/* correct the depth counts if necessary */
-	if (!new_s->next && old_s->next){ /* join undo */
-		printf("adding depth\n");
+			new_l = saved_objects.lines;		/* the original */
+			old_l = latest_line;			/* the changed object */
+			/* swap old with new */
+			bcopy((char*)old_l, (char*)&swp_l, sizeof(F_line));
+			bcopy((char*)new_l, (char*)old_l, sizeof(F_line));
+			bcopy((char*)&swp_l, (char*)new_l, sizeof(F_line));
+			/* this assumes that the object are at the end of the objects list */
+			/* correct the depth counts if necessary */
+			if (!new_l->next && old_l->next){ /* join undo */
+        add_depth(O_POLYLINE, old_l->next->depth);
+      }
+			else if (new_l->next && !old_l->next){ /* split undo */
+        remove_depth(O_POLYLINE, new_l->next->depth);
+      }
+			set_action_object(F_JOIN, O_POLYLINE);
+			redisplay_lines(new_l, old_l);
+    	} else {
+				new_s = saved_objects.splines;		/* the original */
+				old_s = latest_spline;			/* the changed object */
+				/* swap old with new */
+				bcopy((char*)old_s, (char*)&swp_s, sizeof(F_spline));
+				bcopy((char*)new_s, (char*)old_s, sizeof(F_spline));
+				bcopy((char*)&swp_s, (char*)new_s, sizeof(F_spline));
+				/* this assumes that the object are at the end of the objects list */
+				/* correct the depth counts if necessary */
+				if (!new_s->next && old_s->next){ /* join undo */
           add_depth(O_SPLINE, old_s->next->depth);
         }
-	else if (new_s->next && !old_s->next){ /* split undo */
-		printf("removing depth\n");
+				else if (new_s->next && !old_s->next){ /* split undo */
           remove_depth(O_SPLINE, new_s->next->depth);
         }
-	printf("udno_join_split next isntance\n");
-	set_action_object(F_JOIN, O_SPLINE);
-	redisplay_splines(new_s, old_s);
+				set_action_object(F_JOIN, O_SPLINE);
+				redisplay_splines(new_s, old_s);
     }
 }
 
@@ -638,29 +643,43 @@ void undo_delete(void)
 
     switch (last_five_objects[0]) {
       case O_POLYLINE:
-	list_add_line(&objects.lines, saved_objects.lines);
-	redisplay_line(saved_objects.lines);
-	break;
+				nextSavedLine = saved_objects.lines->next;
+				list_add_line(&objects.lines, saved_objects.lines);
+				redisplay_line(saved_objects.lines);
+				saved_objects.lines = nextSavedLine;
+				break;
       case O_ELLIPSE:
-	list_add_ellipse(&objects.ellipses, saved_objects.ellipses);
-	redisplay_ellipse(saved_objects.ellipses);
-	break;
+				display_object_ellipse();
+				nextSavedEllipse = saved_objects.ellipses->next;
+				list_add_ellipse(&objects.ellipses, saved_objects.ellipses);
+				redisplay_ellipse(saved_objects.ellipses);
+				saved_objects.ellipses = nextSavedEllipse;
+				display_object_ellipse();
+				break;
       case O_TXT:
-	list_add_text(&objects.texts, saved_objects.texts);
-	redisplay_text(saved_objects.texts);
-	break;
+				nextSavedText = saved_objects.texts->next;
+				list_add_text(&objects.texts, saved_objects.texts);
+				redisplay_text(saved_objects.texts);
+				saved_objects.texts = nextSavedText;
+				break;
       case O_SPLINE:
-	list_add_spline(&objects.splines, saved_objects.splines);
-	redisplay_spline(saved_objects.splines);
-	break;
+				nextSavedSpline = saved_objects.splines->next;
+				list_add_spline(&objects.splines, saved_objects.splines);
+				redisplay_spline(saved_objects.splines);
+				saved_objects.splines = nextSavedSpline;
+				break;
       case O_ARC:
-	list_add_arc(&objects.arcs, saved_objects.arcs);
-	redisplay_arc(saved_objects.arcs);
-	break;
+				nextSavedArc = saved_objects.arcs->next;
+				list_add_arc(&objects.arcs, saved_objects.arcs);
+				redisplay_arc(saved_objects.arcs);
+				saved_objects.arcs = nextSavedArc;
+				break;
       case O_COMPOUND:
-	list_add_compound(&objects.compounds, saved_objects.compounds);
-	redisplay_compound(saved_objects.compounds);
-	break;
+				nextSavedCompound = saved_objects.compounds->next;
+				list_add_compound(&objects.compounds, saved_objects.compounds);
+				redisplay_compound(saved_objects.compounds);
+				saved_objects.compounds = nextSavedCompound;
+				break;
       case O_FIGURE:
         /* swap saved figure comments with current */
         swp_comm = objects.comments;
@@ -676,11 +695,11 @@ void undo_delete(void)
         redisplay_zoomed_region(xmin, ymin, xmax, ymax);
         break;
       case O_ALL_OBJECT:
-	saved_objects.next = NULL;
-	compound_bound(&saved_objects, &xmin, &ymin, &xmax, &ymax);
-	tail(&objects, &object_tails);
-	append_objects(&objects, &saved_objects, &object_tails);
-	redisplay_zoomed_region(xmin, ymin, xmax, ymax);
+				saved_objects.next = NULL;
+				compound_bound(&saved_objects, &xmin, &ymin, &xmax, &ymax);
+				tail(&objects, &object_tails);
+				append_objects(&objects, &saved_objects, &object_tails);
+				redisplay_zoomed_region(xmin, ymin, xmax, ymax);
     }
     // last_action = F_ADD; //KAB
 		// pop_undo_stack_action();
@@ -881,35 +900,35 @@ void clean_up(void)
 	    // 		break;
 			// }
 		} else if (last_action[0] == F_DELETE || last_action[0] == F_JOIN || last_action[0] == F_SPLIT) {
-			// switch (last_five_objects[0]) {
-	  	// 	case O_ARC:
-	    // 		free_arc(&saved_objects.arcs);
-	    // 		break;
-	  	// 	case O_COMPOUND:
-	    // 		free_compound(&saved_objects.compounds);
-	    // 		break;
-	  	// 	case O_ELLIPSE:
-	    // 		free_ellipse(&saved_objects.ellipses);
-	    // 		break;
-	  	// 	case O_POLYLINE:
-	    // 		free_line(&saved_objects.lines);
-	    // 		break;
-	  	// 	case O_SPLINE:
-		  // 		printf("Freeing Spline\n");
-	    // 		free_spline(&saved_objects.splines);
-	    // 		break;
-	  	// 	case O_TXT:
-	    // 		free_text(&saved_objects.texts);
-	    // 		break;
-	  	// 	case O_ALL_OBJECT:
-	    // 		free_arc(&saved_objects.arcs);
-	    // 		free_compound(&saved_objects.compounds);
-	    // 		free_ellipse(&saved_objects.ellipses);
-	    // 		free_line(&saved_objects.lines);
-	    // 		free_spline(&saved_objects.splines);
-	    // 		free_text(&saved_objects.texts);
-	    // 		break;
-			// }
+			switch (last_five_objects[0]) {
+	  		case O_ARC:
+	    		// free_arc(&saved_objects.arcs);
+	    		break;
+	  		case O_COMPOUND:
+	    		// free_compound(&saved_objects.compounds);
+	    		break;
+	  		case O_ELLIPSE:
+	    		// free_ellipse(&saved_objects.ellipses);
+	    		break;
+	  		case O_POLYLINE:
+	    		// free_line(&saved_objects.lines);
+	    		break;
+	  		case O_SPLINE:
+		  		printf("Freeing Spline\n");
+	    		// free_spline(&saved_objects.splines);
+	    		break;
+	  		case O_TXT:
+	    		// free_text(&saved_objects.texts);
+	    		break;
+	  		case O_ALL_OBJECT:
+	    		free_arc(&saved_objects.arcs);
+	    		free_compound(&saved_objects.compounds);
+	    		free_ellipse(&saved_objects.ellipses);
+	    		free_line(&saved_objects.lines);
+	    		free_spline(&saved_objects.splines);
+	    		free_text(&saved_objects.texts);
+	    		break;
+			}
 		} else if (last_action[0] == F_DELETE_POINT || last_action[0] == F_ADD_POINT) {
 			// if (last_action[0] == F_DELETE_POINT) {
 			// 	/**************************************************
@@ -1000,6 +1019,7 @@ void set_latestline(F_line *line)
 void set_latestspline(F_spline *spline)
 {
 	list_add_spline(&saved_objects.splines, spline);
+
     // saved_objects.splines = spline;
 }
 
@@ -1049,14 +1069,12 @@ void set_newposition(int x, int y)
 void set_action(int action) // KAB replaced by push and pop functions
 {
     // last_action = action;
-		printf("set_action\n");
 		push_undo_stack_action(action);  // add recent action to stack
 }
 
 void set_action_object(int action, int object)
 {
     // last_action = action;
-		printf("set_action_object\n");
 		push_undo_stack_action(action);
 		push_new_object(object);
     // last_object = object;
@@ -1101,7 +1119,6 @@ void pop_undo_stack_action()
 
 // push the given action onto the undo action stack
 void push_undo_stack_action(int action) {
-	printf("pushing undo\n");
 	// printf("Displaying undo aciton stack:\n");
 	for(int index = 4; index >= 0; index--) {
 		// printf("last_action[%d] = %d\n", index, last_action[index]);
@@ -1145,7 +1162,6 @@ void push_redo_stack_action(int action) {
 
 void push_new_object(int new_object)
 {
-	printf("pushing object\n");
 	// printf("Displaying object stack:\n");
 	for(int index = 4; index >= 0; index--) {
 		// printf("last_five_objects[%d] = %d\n", index, last_five_objects[index]);
@@ -1160,7 +1176,6 @@ void push_new_object(int new_object)
 
 void pop_last_object()
 {
-	printf("popping object\n");
 	// printf("Displaying object stack:\n");
 	for(int i = 0; i < 5; i++)
 	{
@@ -1199,6 +1214,29 @@ void display_object_splines() {
 		printf("Spline: %d\n", this_head);
 		this_head = this_head->next;
 	}
+	printf("\n");
+}
+
+void display_object_ellipse() {
+	F_spline **head = &objects.ellipses;
+	F_spline *this_head = *head;
+
+	while(this_head != NULL) {
+		printf("Ellipse: %d\n", this_head);
+		this_head = this_head->next;
+	}
+	printf("\n");
+}
+
+void display_saved_object_splines() {
+	F_spline **head = &saved_objects.splines;
+	F_spline *this_head = *head;
+
+	while(this_head != NULL) {
+		printf("saved Spline: %d\n", this_head);
+		this_head = this_head->next;
+	}
+	printf("\n");
 }
 
 void display_objects() {
