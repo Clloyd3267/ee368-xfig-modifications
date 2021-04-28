@@ -100,7 +100,7 @@ void sendtoback(F_line* p, int type)
         {
             if (get_max_depth() == 999)
             {
-                put_message("Depth 999 already occupied, Compound object moved to have max depth of 999");
+                put_msg("Depth 999 already occupied, Compound object moved to have max depth of 999");
             }
                 offset = 999 - maxc;
         }
